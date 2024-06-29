@@ -175,3 +175,5 @@ installation() {
     # Reboot
     reboot
 }
+
+installation
