@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Commenting the original prompt out
+# export PS1="\u \[\e[33m\]\W\[\e[m\] λ "
+export PS1="λ "
