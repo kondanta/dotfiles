@@ -1,0 +1,37 @@
+live_config_reload = true
+
+[bell]
+animation = "EaseOutExpo"
+color = "0xffffff"
+duration = 0
+
+[debug]
+# "Values for `log_level`" = ["Off", "Error", "Warn", "Info", "Debug", "Trace"]
+log_level = "Off"
+persistent_logging = false
+print_events = false
+render_timer = false
+
+[font]
+size = 16.0
+
+[font.bold]
+family = "Iosevka Slab"
+style = "Medium"
+
+[font.normal]
+family = "Iosevka Slab"
+style = "Regular"
+
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+
+[shell]
+args = ["-l", "-c", "/usr/bin/tmux attach || /usr/bin/tmux"]
+program = "/bin/bash"
+
+[[keyboard.bindings]]
+chars = "\b"
+key = "H"
+mods = "Control"
