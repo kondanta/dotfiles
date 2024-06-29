@@ -22,3 +22,6 @@ fi
 
 # Add it to the crontab to work every day at 2 pm
 (crontab -l 2>/dev/null; echo "0 14 * * * /bin/bash -c $TARGET_DIR/user-scripts/submodule-updater") | crontab -
+
+# Put dwm config into correct place
+rm -f $HOME/.local/src/dwm/config.h && ln -s $TARGET_DIR/custom-dwm/config.h $HOME/.local/src/dwm/config.h
