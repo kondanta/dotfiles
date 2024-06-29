@@ -1,0 +1,149 @@
+#!/bin/bash
+
+alias k="kubectl"
+if ! command -v kubie &>/dev/null; then
+    echo "Install kubie for kubectl context and kubectl namespace operations"
+fi
+
+if ! command -v kubectl &> /dev/null; then
+    echo "Install kubectl first"
+fi
+
+# Just printing what is available
+field_selector_list() {
+    cat <<EOF
+### CertificateSigningRequest ###
+spec.signerName
+
+### CronJob###
+status.successful
+
+### Event ###
+involvedObject.kind
+involvedObject.namespace
+involvedObject.name
+involvedObject.uid
+involvedObject.apiVersion
+involvedObject.resourceVersion
+involvedObject.fieldPath
+reason
+source (appears to resolve to metadata.source.component, falls back to reportingComponent)
+type
+reportingComponent
+
+### Job	###
+status.successful
+
+### JobTemplate ###
+status.successful
+
+### Namespace ###
+status.phase
+
+### Node ###
+spec.unschedulable
+
+### Pod ###
+spec.nodeName
+spec.restartPolicy
+spec.schedulerName
+spec.serviceAccountName
+status.phase
+status.podIP
+status.nominatedNodeName
+
+### ReplicationController
+status.replicas
+
+### Secret ###
+status.phase
+type
+
+### StatefulSet	###
+status.successful
+EOF
+}
+
+kctx() { k config current-context; }
+kgv() {  k lineage $1 --output=split --show-group; }
+klsctx() { k config get-contexts; }
+ksetctx() { k config use-context $1; }
+ctx() {
+    if [ ! -z "$1" ]; then
+        kubie ctx $1
+    else
+	kubie ctx
+    fi
+}
+ns() {
+    if [ ! -z "$1" ]; then
+        kubie ns $1
+    else
+	kubie ns
+    fi
+}
+kns() { k config view --minify -o jsonpath='{..namespace}';echo; }
+kgew() {
+    if [ "$1" == "-A" ]; then
+        k get events -A -w --field-selector=type=Warning --sort-by='.metadata.creationTimestamp'
+    else
+        k get events -w --field-selector=type=Warning --sort-by='.metadata.creationTimestamp'
+    fi
+}
+kgee() {
+    if [ "$1" == "-A" ]; then
+        k get events -A -w --field-selector=type=Error --sort-by='.metadata.creationTimestamp'
+    else
+        k get events -w --field-selector=type=Error --sort-by='.metadata.creationTimestamp'
+    fi
+}
+kgewf() {
+    if [ "$1" == "-h" ]; then
+        field_selector_list
+    return 0
+    fi
+    if [ "$2" == "-A" ]; then
+        k get events -w -A --field-selector=$1 --sort-by='.metadata.creationTimestamp'
+    else
+        k get events -w --field-selector=$1 --sort-by='.metadata.creationTimestamp'
+    fi
+}
+cani() { k auth can-i --list; }
+succeeded() {  k get pod -o=jsonpath='{.items[?(@.status.phase=="Succeeded")].metadata.name}'; }
+rusage(){
+    local GREP=rg # use ripgrep
+    local FILTER;
+
+    if [ "$#" -lt 1 ]; then echo "Provide label selector"; fi
+    if [ -z "$2" ]; then
+        FILTER=$(echo $1 | cut -d'=' -f2)
+    else
+        FILTER=$2
+    fi
+    # k resource_capacity -c -l=app=hodor-auth -u | (read line; echo "$line"; rg hodor)
+    k resource_capacity -c -l=$1 -u | (read line; echo "$line"; $GREP $FILTER)
+}
+kallresources() {
+	k api-resources --verbs=list -o name --namespaced | xargs -n 1 kubectl get --show-kind --ignore-not-found
+}
+
+unused_secrets() {
+    envSecrets=$(kubectl get pods -o jsonpath='{.items[*].spec.containers[*].env[*].valueFrom.secretKeyRef.name}' | xargs -n1)
+    envSecrets2=$(kubectl get pods -o jsonpath='{.items[*].spec.containers[*].envFrom[*].secretRef.name}' | xargs -n1)
+    volumeSecrets=$(kubectl get pods -o jsonpath='{.items[*].spec.volumes[*].secret.secretName}' | xargs -n1)
+    pullSecrets=$(kubectl get pods -o jsonpath='{.items[*].spec.imagePullSecrets[*].name}' | xargs -n1)
+    tlsSecrets=$(kubectl get ingress -o jsonpath='{.items[*].spec.tls[*].secretName}' | xargs -n1)
+
+
+    diff \
+    <(echo "$envSecrets\n$envSecrets2\n$volumeSecrets\n$pullSecrets\n$tlsSecrets" | sort | uniq) \
+    <(kubectl get secrets -o jsonpath='{.items[*].metadata.name}' | xargs -n1 | sort | uniq)
+}
+
+kgs() {
+    if [ -z "$2" ]; then
+        k get secret "$1" -o go-template='{{range $k,$v := .data}}{{printf "%s: " $k}}{{if not $v}}{{$v}}{{else}}{{$v | base64decode}}{{end}}{{"\n"}}{{end}}'
+    else
+        k get secret -n $2 "$1" -o go-template='{{range $k,$v := .data}}{{printf "%s: " $k}}{{if not $v}}{{$v}}{{else}}{{$v | base64decode}}{{end}}{{"\n"}}{{end}}'
+    fi
+}
