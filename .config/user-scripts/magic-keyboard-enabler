@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo 0 | sudo tee /sys/module/hid_apple/parameters/swap_fn_leftctrl
+echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode
+
+IS_ENABLE=$1
+
+if [ "$IS_ENABLE" = "enable" ]; then
+    echo 1 | sudo tee /sys/module/hid_apple/parameters/swap_fn_leftctrl
+    echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode
+else
+    echo 0 | sudo tee /sys/module/hid_apple/parameters/swap_fn_leftctrl
+    echo 3 | sudo tee /sys/module/hid_apple/parameters/fnmode
+fi
