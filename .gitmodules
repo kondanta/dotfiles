@@ -2,3 +2,9 @@
 	path = .config/firefox-config
 	url = git@github.com:kondanta/firefox-config.git
 	branch = taylan/fork
+[submodule ".config/tmux/plugins/tpm"]
+	path = .config/tmux/plugins/tpm
+	url = git@github.com:tmux-plugins/tpm.git
+[submodule ".config/tmux/plugins/tmux-power"]
+	path = .config/tmux/plugins/tmux-power
+	url = git@github.com:wfxr/tmux-power.git
