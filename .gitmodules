@@ -1,0 +1,4 @@
+[submodule ".config/firefox-config"]
+	path = .config/firefox-config
+	url = git@github.com:kondanta/firefox-config.git
+	branch = taylan/fork
