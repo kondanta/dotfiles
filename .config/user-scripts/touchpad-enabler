@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Fetch Touchpad's device ID using xinput
+touchpad_id=$(xinput list | /bin/grep -i touchpad | awk '{print $5}' | awk -F= '{print $2}')
+
+# UI puts weird arrow symbol if the device is enabled, hence the check.
+if [ -z $touchpad_id ]; then
+    touchpad_id=$(xinput list | /bin/grep -i touchpad | awk '{print $6}' | awk -F= '{print $2}')
+fi
+
+# Enable the touchpad or disable it based on its current state
+if [ $(xinput list-props $touchpad_id | /bin/grep "Device Enabled" | awk '{print $4}') -eq 0 ]; then
+    xinput enable $touchpad_id
+else
+    xinput disable $touchpad_id
+fi
