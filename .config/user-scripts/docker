@@ -1,0 +1,29 @@
+#!/bin/sh
+
+dclean() { docker rm -f $(docker ps -aq); }
+
+di() { docker images --format "table {{.ID}}\t{{.Tag}}"; }
+
+drmi() { docker rmi $(docker images --format '{{.Repository}}' | grep $@) -f; }
+
+dps() { docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"; }
+
+dr() { docker run --rm $@; }
+
+dri() { docker run --rm -it $@; }
+
+diclean() { docker rmi $(docker images -f "dangling=true" -q); }
+
+drm() { docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm; }
+
+opencontainer() {
+    export KIND_EXPERIMENTAL_PROVIDER=podman
+    podman machine init -m 4096 --cpus 6 --disk-size 50
+    podman machine set --rootful
+    podman machine start
+}
+closecontainer() {
+    unset KIND_EXPERIMENTAL_PROVIDER
+    podman machine stop
+    podman machine rm -f # ignore y/N question
+}
