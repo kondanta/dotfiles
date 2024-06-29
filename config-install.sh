@@ -17,5 +17,8 @@ if [[ ! -z $(which firefox)]]; then
     echo "Created firefox profile 'home' in $HOME/.mozilla/firefox/profiles"
 fi
 
-git submodule update --init --recursive
-cp -R $TARGET_DIR/firefox-config/{user.js,chrome/} $HOME/.mozilla/firefox/profiles/home/
+# Trigger submodule update
+/bin/bash -c "$TARGET_DIR/user-scripts/submodule-updater"
+
+# Add it to the crontab to work every day at 2 pm
+(crontab -l 2>/dev/null; echo "0 14 * * * /bin/bash -c $TARGET_DIR/user-scripts/submodule-updater") | crontab -

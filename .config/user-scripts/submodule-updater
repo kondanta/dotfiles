@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# List of the submodules to update
+SUBMODULES=(
+    "tmux/plugins/tpm"
+    "tmux/plugins/tmux-power"
+    "firefox-config"
+)
+
+# Directory that submodules are located in
+SUBMODULES_DIR="$HOME/.config/"
+
+for submodule in "${SUBMODULES[@]}"; do
+    echo "Updating $submodule"
+    git -C "$SUBMODULES_DIR$submodule" submodule update --init --recursive
+    git -C "$SUBMODULES_DIR$submodule" submodule update --remote --merge
+done
