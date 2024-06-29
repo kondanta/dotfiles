@@ -8,3 +8,6 @@
 [submodule ".config/tmux/plugins/tmux-power"]
 	path = .config/tmux/plugins/tmux-power
 	url = git@github.com:wfxr/tmux-power.git
+[submodule ".config/fzf"]
+	path = .config/fzf
+	url = git@github.com:junegunn/fzf.git

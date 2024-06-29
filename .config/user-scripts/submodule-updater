@@ -5,6 +5,7 @@ SUBMODULES=(
     "tmux/plugins/tpm"
     "tmux/plugins/tmux-power"
     "firefox-config"
+    "fzf"
 )
 
 # Directory that submodules are located in
