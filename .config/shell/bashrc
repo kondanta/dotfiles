@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# Disable the bell
+if [[ $iatest > 0 ]]; then bind "set bell-style visible"; fi
+stty -ixon # Disable ctrl-s and ctrl-q.
+stty werase \^H # Use CTRL + Backspace for deleting a word
+shopt -s autocd #Allows you to cd into directory merely by typing the directory name.
+HISTSIZE= HISTFILESIZE= # Infinite history.
+
+source /usr/share/git/completion/git-completion.bash
+
+
+[ -f "$HOME/.config/user-scripts/aliasrc" ] && source "$HOME/.config/user-scripts/aliasrc"
+[ -f "$HOME/.config/user-scripts/exports" ] && source "$HOME/.config/user-scripts/exports"
+[ -f "$HOME/.config/user-scripts/prompt" ] && source "$HOME/.config/user-scripts/prompt"
+[ -f "$HOME/.config/user-scripts/kuberc" ] && source "$HOME/.config/user-scripts/kuberc"
+[ -f "$HOME/.config/user-scripts/gen_kuberc" ] && source "$HOME/.config/user-scripts/gen_kuberc"
+[ -f "$HOME/.config/user-scripts/docker" ] && source "$HOME/.config/user-scripts/docker"
+[ -f "$HOME/.config/user-scripts/git" ] && source "$HOME/.config/user-scripts/git"
+[ -f "$HOME/.config/user-scripts/utility" ] && source "$HOME/.config/user-scripts/utility"
+[ -f "$HOME/.config/user-scripts/aws" ] && source "$HOME/.config/user-scripts/aws"
+[ -f "$HOME/.config/fzf/fzf.bash" ] && source "$HOME/.config/fzf/fzf.bash"
+function kubectl() { echo "+ kubectl \"$@\"">&2; command kubectl "$@"; }
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+eval "$(/usr/bin/zoxide init bash)"
+
+source <(kind completion bash)
+source <(kubectl completion bash)
+complete -o default -F __start_kubectl k
+
+
+PATH="/home/kondanta/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/kondanta/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/kondanta/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/kondanta/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/kondanta/perl5"; export PERL_MM_OPT;
+### Krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+. "$HOME/.cargo/env"
