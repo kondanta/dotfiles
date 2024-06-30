@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 timezone() {
     ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
     hwclock --systohc
@@ -95,8 +97,8 @@ setup-disk-with-btrfs-and-encryption() {
     mkfs.btrfs /dev/mapper/cryptroot
 
     # Mount
-    mkdir /mnt
-    mkdir /mnt/boot
+    mkdir -p /mnt
+    mkdir -p /mnt/boot
     mount -t btrfs /dev/mapper/cryptroot /mnt
     btrfs su cr /mnt/@
     btrfs su cr /mnt/@home
