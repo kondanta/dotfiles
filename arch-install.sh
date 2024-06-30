@@ -165,7 +165,7 @@ chroot-installation() {
     /bin/bash -c "setup-bootloader"
 
     # Install after chroot
-    /bin/bash -c "install-base"
+    /bin/bash -c "install-base $username"
 }
 
 installation() {
