@@ -65,7 +65,7 @@ gen-fstab(){
 }
 
 install-base() {
-    pacstrap /mnt base base-devel linux linux-firmware btrfs-progs efibootmgr grub os-prober vim git
+    pacstrap /mnt base base-devel linux linux-firmware btrfs-progs efibootmgr grub os-prober vim git networkmanager timeshift
 }
 
 setup-disk-with-btrfs-and-encryption() {
@@ -119,13 +119,6 @@ chroot-installation() {
     echo "Enter root password:"
     passwd
 
-    # Add user
-    echo "Enter username:"
-    read username
-    useradd -m -G wheel -s /bin/bash $username
-    echo "Enter password for $username:"
-    passwd $username
-
     # Locale and keymap
     setlocale
     setkeymap
@@ -160,6 +153,10 @@ installation() {
     export -f chroot-installation
     export -f setup-bootloader
     export -f setup-intel-ucode
+    export -f timezone
+    export -f setlocale
+    export -f setkeymap
+    export -f sethost
 
     # Chroot
     arch-chroot /mnt /bin/bash -c "chroot-installation"
