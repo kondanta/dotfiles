@@ -105,11 +105,11 @@ setup-disk-with-btrfs-and-encryption() {
     btrfs su cr /mnt/@var
     btrfs su cr /mnt/@snapshots
     umount /mnt
-    mount -o noatime,compress=lzo,space_cache,subvol=@ /dev/mapper/cryptroot /mnt
+    mount -o noatime,compress=lzo,space_cache=v2,subvol=@ /dev/mapper/cryptroot /mnt
     mkdir -p /mnt/{boot,home,var,.snapshots}
-    mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/mapper/cryptroot /mnt/home
-    mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/mapper/cryptroot /mnt/var
-    mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/mapper/cryptroot /mnt/.snapshots
+    mount -o noatime,compress=lzo,space_cache=v2,subvol=@home /dev/mapper/cryptroot /mnt/home
+    mount -o noatime,compress=lzo,space_cache=v2,subvol=@var /dev/mapper/cryptroot /mnt/var
+    mount -o noatime,compress=lzo,space_cache=v2,subvol=@snapshots /dev/mapper/cryptroot /mnt/.snapshots
     mount ${disk}1 /mnt/boot
 }
 
