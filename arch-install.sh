@@ -113,24 +113,6 @@ setup-disk-with-btrfs-and-encryption() {
     mount ${disk}1 /mnt/boot
 
 }
-install-base() {
-    # change user
-    su $1
-
-    pacman -S --needed base-devel
-    git clone https://aur.archlinux.org/paru.git
-    cd paru
-    makepkg -si
-
-    # Install packages
-    paru -S --needed - < .config/packages.txt
-
-    # Enable services
-    systemctl enable NetworkManager
-    systemctl enable sshd
-    systemctl enable cronie
-    systemctl enable fstrim.timer
-}
 
 chroot-installation() {
     # Change passwd
@@ -163,9 +145,6 @@ chroot-installation() {
 
     # Setup bootloader
     /bin/bash -c "setup-bootloader"
-
-    # Install after chroot
-    /bin/bash -c "install-base $username"
 }
 
 installation() {
@@ -181,19 +160,14 @@ installation() {
     export -f chroot-installation
     export -f setup-bootloader
     export -f setup-intel-ucode
-    export -f install-base
 
     # Chroot
     arch-chroot /mnt /bin/bash -c "chroot-installation"
 
-    # Exit chroot
-    exit
-
     # Unmount
     umount -R /mnt
 
-    # Reboot
-    reboot
+    echo "Installation complete. Reboot the system."
 }
 
 installation
