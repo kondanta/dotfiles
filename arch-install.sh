@@ -55,7 +55,8 @@ setup-bootloader() {
     echo "Is this an Intel or AMD system? (i/a)"
     read cpu
     if [ $cpu == "i" ]; then
-        setup-intel-ucode
+        export -f setup-intel-ucode
+        /bin/bash -c "setup-intel-ucode"
     fi
     grub-mkconfig -o /boot/grub/grub.cfg
 }
@@ -151,11 +152,14 @@ chroot-installation() {
     sed -i 's/^HOOKS.*/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
     mkinitcpio -p linux
 
+    export -f setup-bootloader
+    export -f install-after-chroot
+
     # Setup bootloader
-    setup-bootloader
+    /bin/bash -c "setup-bootloader"
 
     # Install after chroot
-    install-after-chroot
+    /bin/bash -c "install-after-chroot"
 }
 
 installation() {
