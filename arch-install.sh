@@ -55,7 +55,6 @@ setup-bootloader() {
     echo "Is this an Intel or AMD system? (i/a)"
     read cpu
     if [ $cpu == "i" ]; then
-        export -f setup-intel-ucode
         /bin/bash -c "setup-intel-ucode"
     fi
     grub-mkconfig -o /boot/grub/grub.cfg
@@ -112,9 +111,12 @@ setup-disk-with-btrfs-and-encryption() {
     mount -o noatime,compress=lzo,space_cache=v2,subvol=@var /dev/mapper/cryptroot /mnt/var
     mount -o noatime,compress=lzo,space_cache=v2,subvol=@snapshots /dev/mapper/cryptroot /mnt/.snapshots
     mount ${disk}1 /mnt/boot
-}
 
-install-after-chroot() {
+}
+install-base() {
+    # change user
+    sudo -u $1
+
     pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
     cd paru
@@ -135,6 +137,13 @@ chroot-installation() {
     echo "Enter root password:"
     passwd
 
+    # Add user
+    echo "Enter username:"
+    read username
+    useradd -m -G wheel -s /bin/bash $username
+    echo "Enter password for $username:"
+    passwd $username
+
     # Locale and keymap
     setlocale
     setkeymap
@@ -152,8 +161,7 @@ chroot-installation() {
     sed -i 's/^HOOKS.*/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
     mkinitcpio -p linux
 
-    export -f setup-bootloader
-    export -f install-after-chroot
+    /bin/bash -c "install-base $username"
 
     # Setup bootloader
     /bin/bash -c "setup-bootloader"
@@ -171,7 +179,12 @@ installation() {
     install-base
     gen-fstab
 
+    # Export functions
     export -f chroot-installation
+    export -f setup-bootloader
+    export -f install-after-chroot
+    export -f setup-intel-ucode
+    export -f install-base
 
     # Chroot
     arch-chroot /mnt /bin/bash -c "chroot-installation"
