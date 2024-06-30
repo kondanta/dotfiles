@@ -115,7 +115,7 @@ setup-disk-with-btrfs-and-encryption() {
 }
 install-base() {
     # change user
-    sudo -u $1
+    su $1
 
     pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
@@ -161,13 +161,11 @@ chroot-installation() {
     sed -i 's/^HOOKS.*/HOOKS=(base udev autodetect keyboard keymap modconf block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
     mkinitcpio -p linux
 
-    /bin/bash -c "install-base $username"
-
     # Setup bootloader
     /bin/bash -c "setup-bootloader"
 
     # Install after chroot
-    /bin/bash -c "install-after-chroot"
+    /bin/bash -c "install-base"
 }
 
 installation() {
@@ -182,7 +180,6 @@ installation() {
     # Export functions
     export -f chroot-installation
     export -f setup-bootloader
-    export -f install-after-chroot
     export -f setup-intel-ucode
     export -f install-base
 
