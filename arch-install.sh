@@ -129,18 +129,7 @@ install-after-chroot() {
     systemctl enable fstrim.timer
 }
 
-installation() {
-    loadkeys us
-    timedatectl set-ntp true
-
-    setup-wifi
-    setup-disk-with-btrfs-and-encryption
-    install-base
-    gen-fstab
-
-    # Chroot
-    arch-chroot /mnt
-
+chroot-installation() {
     # Change passwd
     echo "Enter root password:"
     passwd
@@ -167,6 +156,21 @@ installation() {
 
     # Install after chroot
     install-after-chroot
+}
+
+installation() {
+    loadkeys us
+    timedatectl set-ntp true
+
+    setup-wifi
+    setup-disk-with-btrfs-and-encryption
+    install-base
+    gen-fstab
+
+    export -f chroot-installation
+
+    # Chroot
+    arch-chroot /mnt /bin/bash -c "chroot-installation"
 
     # Exit chroot
     exit
