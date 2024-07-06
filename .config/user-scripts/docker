@@ -4,7 +4,10 @@ dclean() { docker rm -f $(docker ps -aq); }
 
 di() { docker images --format "table {{.ID}}\t{{.Tag}}"; }
 
-drmi() { docker rmi $(docker images --format '{{.Repository}}' | grep $@) -f; }
+drmi() {
+    # Select a docker image or images to remove
+  docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
+}
 
 dps() { docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"; }
 

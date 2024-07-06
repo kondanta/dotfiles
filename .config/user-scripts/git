@@ -8,13 +8,19 @@ gst() { git status -sb; }
 
 glog() { git log; }
 
-gco() { git checkout $@; }
+gco() {
+	if [ ! -z $1  ]; then
+		git checkout $@;
+	else
+	  _fzf_git_each_ref --no-multi | xargs git checkout
+	fi
+}
 
 gdca() { git diff --cached; }
 
 gd() { git diff; }
 
-gb() { git branch $@ | tee; }
+gb() { _fzf_git_branches; }
 
 gclear() {
     git -c gc.reflogExpire=0 -c gc.reflogExpireUnreachable=0 -c gc.rerereresolved=0 -c gc.rerereunresolved=0 -c gc.pruneExpire=now gc

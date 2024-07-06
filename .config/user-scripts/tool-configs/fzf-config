@@ -1,0 +1,66 @@
+#!/bin/bash
+
+export FZF_COMPLETION_DIR_COMMANDS="cd pushd rmdir tree z"
+
+export FZF_DEFAULT_COMMAND="bfs -color -mindepth 1 -exclude \( -name .git \) -type f printf '%P\n' 2>/dev/null"
+# export FZF_DEFAULT_OPTIONS="--extended --preview-window --bind '?:toggle-preview,ctrl-o:execute-silent(xdg-open {})'"
+export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --ansi"
+
+export FZF_CTRL_T_COMMAND="bfs -color -mindepth 1 -exclude \( -name .git \) -printf '%P\n' 2>/dev/null"
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+
+export FZF_CTRL_R_OPTS="
+  --preview 'echo {}' --preview-window up:3:hidden:wrap
+  --bind 'ctrl-/:toggle-preview'
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | cpy)+abort'
+  --color header:italic
+  --header 'Press CTRL-Y to copy command into clipboard'"
+
+export FZF_ALT_C_COMMAND="bfs -color -mindepth 1 -exclude \( -name .git \) -type d -printf '%P\n' 2>/dev/null"
+export FZF_ALT_C_OPTS="$FZF_ALT_C_OPTS--ansi"
+
+_fzf_comprun() {
+    local command=$1
+    shift
+
+    case $command in
+        cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+        export|unset) fzf --preview "eval 'echo \$'{}" "$@" ;;
+        ssh)          fzf --preview 'dig {}' "$@" ;;
+        *)            fzf --preview "--preview 'bat -n --color=always --line-range :500 {}'" "$@" ;;
+    esac
+}
+
+_fzf_compgen_path() {
+    bfs -H "$1" -color -exclude \( -name .git \) 2>/dev/null
+}
+
+_fzf_compgen_dir() {
+    bfs -H "$1" -color -exclude \( -name .git \) -type d 2>/dev/null
+}
+
+# Git config
+# Redefine this function to change the options
+_fzf_git_fzf() {
+  fzf-tmux -p80%,60% -- \
+    --layout=reverse --multi --height=50% --min-height=20 --border \
+    --border-label-pos=2 \
+    --color='header:italic:underline,label:blue' \
+    --preview-window='right,50%,border-left' \
+    --bind='ctrl-/:change-preview-window(down,50%,border-top|hidden|)' "$@"
+}
+
+# Pacman
+# Install packages using yay (change to pacman/AUR helper of your choice)
+function paruinstall() {
+    paru -Slq | fzf -q "$1" -m --preview 'paru -Si {1}'| xargs -ro paru -S
+}
+# Remove installed packages (change to pacman/AUR helper of your choice)
+function paruremove() {
+    paru -Qq | fzf -q "$1" -m --preview 'paru -Qi {1}' | xargs -ro paru -Rns
+}
+
+# man
+function fman() {
+    man -k . | fzf -q "$1" --prompt='man> '  --preview $'echo {} | tr -d \'()\' | awk \'{printf "%s ", $2} {print $1}\' | xargs -r man' | tr -d '()' | awk '{printf "%s ", $2} {print $1}' | xargs -r man
+}

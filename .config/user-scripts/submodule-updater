@@ -9,10 +9,14 @@ SUBMODULES=(
 )
 
 # Directory that submodules are located in
-SUBMODULES_DIR="$HOME/.config/"
+SUBMODULES_DIR=$XDG_CONFIG_HOME/taylan-dotfiles-gh/.config
 
 for submodule in "${SUBMODULES[@]}"; do
     echo "Updating $submodule"
-    git -C "$SUBMODULES_DIR$submodule" submodule update --init --recursive
-    git -C "$SUBMODULES_DIR$submodule" submodule update --remote --merge
+    # git -C "$SUBMODULES_DIR/$submodule" submodule update --init --recursive
+    git -C "$SUBMODULES_DIR/$submodule" submodule update --remote --merge
+    echo "Done updating $submodule"
+    echo "replacing the submodule with the updated one"
+    rm -rf $XDG_CONFIG_HOME/$submodule
+    cp -r $SUBMODULES_DIR/$submodule $XDG_CONFIG_HOME/$submodule
 done

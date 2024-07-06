@@ -90,3 +90,8 @@ wifi() {
 rankpacman() {
 	curl -s "https://archlinux.org/mirrorlist/?country=NO&country=SE&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 -
 }
+
+emoji() {
+	selected_emoji=$(curl -sSL 'https://git.io/JXXO7' | fzf)
+	echo $selected_emoji | cut -d ' ' -f1 | tr -d '\n' | xclip -selection clipboard
+}

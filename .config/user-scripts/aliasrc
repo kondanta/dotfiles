@@ -1,67 +1,55 @@
 #!/bin/sh
 
-case "$OSTYPE" in
-    darwin*)
-	alias ls="gls -hN --color=auto --group-directories-first"
-	;;
-    linux*)
-	alias ls="ls -hN --color=auto --group-directories-first"
-	;;
-esac
-
-alias ka="killall" \
-	mkd="mkdir -pv" \
-	mpv="mpv --input-ipc-server=/tmp/mpvsoc$(date +%s)" \
-	calcurse="calcurse -D ~/.config/calcurse" \
-	magit="nvim -c MagitOnly" \
-	p="sudo pacman" \
-	SS="sudo systemctl" \
+# System related aliases
+alias p="sudo pacman" \
+	SS="fuzzy-sys" \
+	Ss="fuzzy-sys -u" \
 	f="$FILE" \
 	g="git" \
-	trem="transmission-remote" \
-	x="sxiv -ft *" \
 	sdn="sudo shutdown -h now" \
-	grep="grep --color=auto" \
+	lsp="pacman -Qett --color=always | less" \
+	c="clear" \
+	nf="clear && neofetch" \
+	du="dust" \
+	pst="xclip -selection clipboard -o" \
+	cpy="xclip -selection clipboard" \
+	cal="cal -w" \
+	md="mkdir -p" \
+	d="cd ~/Downloads && ls -la" \
+	D="cd ~/Documents && ls -la"
+
+# Tooling aliases
+alias grep="grep --color=auto" \
 	ccat="highlight --out-format=ansi" \
 	yt="youtube-dl --add-metadata -i -o '%(title)s.%(ext)s'" \
 	ytm="yt -x --audio-format mp3 --prefer-ffmpeg -f bestaudio/best" \
 	ytv="yt -f bestvideo+bestaudio --merge-output-format mp4" \
-	ref="shortcuts >/dev/null; source ~/.config/shortcutrc" \
-	upc="sudo pacman -Syu; pkill -RTMIN+8 i3blocks" \
-	lsp="pacman -Qett --color=always | less" \
 	ffmpeg="ffmpeg -hide_banner" \
     mv="mv -v" \
     cp="cp -v" \
-    ls="exa -F --group-directories-first" \
+	ls="eza --color=always --long --icons=always --no-time --no-filesize --git" \
     la="ls -la" \
     ll="ls --long -mghHUu --git --changed --time-style long-iso -@" \
-    sdn="sudo shutdown now" \
-    newnet="sudo systemctl restart NetworkManager" \
-    nf="clear && neofetch" \
-    md="mkdir -p" \
+	c="clear" \
+	vim="/usr/bin/nvim $@" \
+	e="emacs"
+
+# Tmux aliases
+alias t="tmux -2" \
+	tn="t new -s" \
+	ta="t a -t" \
+	tls="t ls" \
+	tk="t kill-window -t" \
+
+
+# Zipping aliases
+alias md="mkdir -p" \
 	mktar='tar -cvf' \
 	mkbz2='tar -cvjf' \
 	mkgz='tar -cvzf' \
 	untar='tar -xvf' \
 	unbz2='tar -xvjf' \
-	ungz='tar -xvzf' \
-	c="clear" \
-    t="tmux -2" \
-    tn="t new -s" \
-    ta="t a -t" \
-    tls="t ls" \
-	ps="procs" \
-    du="dust" \
-	vim="/usr/local/bin/e $@" \
-	ers="systemctl --user restart emacs" \
-    cpy="xclip -selection clipboard" \
-    pst="xclip -selection clipboard -o" \
-	tk="t kill-window -t" \
-	rrepl="evcxr" \
-	grep="rg" \
-	d="cd ~/Downloads && ls -la" \
-	D="cd ~/Documents && ls -la" \
-	e="emacs"
+	ungz='tar -xvzf'
 
 vf() { fzf | xargs -r -I % $EDITOR % ;}
 __git_complete gco _git_checkout
