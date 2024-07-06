@@ -26,13 +26,18 @@ source /usr/share/git/completion/git-completion.bash
 [ -f "$HOME/.config/user-scripts/utility" ] && source "$HOME/.config/user-scripts/utility"
 [ -f "$HOME/.config/user-scripts/aws" ] && source "$HOME/.config/user-scripts/aws"
 [ -f "$HOME/.config/fzf/fzf.bash" ] && source "$HOME/.config/fzf/fzf.bash"
+[ -f "$XDG_CONFIG_HOME/user-scripts/tool-config" ] && source "$XDG_CONFIG_HOME/user-scripts/tool-config"
+
 function kubectl() { echo "+ kubectl \"$@\"">&2; command kubectl "$@"; }
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 eval "$(/usr/bin/zoxide init bash)"
 
 source <(kind completion bash)
-source <(kubectl completion bash)
+command -v fzf >/dev/null 2>&1 && {
+	source <(kubectl completion bash | sed 's#"${requestComp}" 2>/dev/null#"${requestComp}" 2>/dev/null | head -n -1 | fzf  --multi=0 #g')
+}
+# source <(kubectl completion bash)
 complete -o default -F __start_kubectl k
 
 
@@ -44,3 +49,9 @@ PERL_MM_OPT="INSTALL_BASE=/home/kondanta/perl5"; export PERL_MM_OPT;
 ### Krew
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 . "$HOME/.cargo/env"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/usr/lib/google-cloud-sdk/path.bash.inc' ]; then . '/usr/lib/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/usr/lib/google-cloud-sdk/completion.bash.inc' ]; then . '/usr/lib/google-cloud-sdk/completion.bash.inc'; fi
