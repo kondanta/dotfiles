@@ -1,10 +1,11 @@
 $include /etc/inputrc
-set editing-mode vi
-$if mode=vi
+#set editing-mode vi
+#$if mode=vi
+set editing-mode emacs
 
 set show-mode-in-prompt on
-set vi-ins-mode-string \1\e[6 q\2
-set vi-cmd-mode-string \1\e[2 q\2
+#set vi-ins-mode-string \1\e[6 q\2
+#set vi-cmd-mode-string \1\e[2 q\2
 
 "\C-H": backward-kill-word
 "\C-w": backward-kill-word
@@ -13,16 +14,17 @@ set vi-cmd-mode-string \1\e[2 q\2
 "\C-a": beginning-of-line
 "\C-e": end-of-line
 
-set keymap vi-command
+set keymap emacs-meta
+#set keymap vi-command
 # these are for vi-command mode
-Control-l: clear-screen
-Control-a: beginning-of-line
+#Control-l: clear-screen
+#Control-a: beginning-of-line
 
-set keymap vi-insert
+#set keymap vi-insert
 # these are for vi-insert mode
-Control-l: clear-screen
-Control-a: beginning-of-line
+#Control-l: clear-screen
+#Control-a: beginning-of-line
 
 
 
-$endif
+#$endif

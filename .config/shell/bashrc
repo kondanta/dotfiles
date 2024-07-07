@@ -11,7 +11,13 @@ if [[ $iatest > 0 ]]; then bind "set bell-style visible"; fi
 stty -ixon # Disable ctrl-s and ctrl-q.
 stty werase \^H # Use CTRL + Backspace for deleting a word
 shopt -s autocd #Allows you to cd into directory merely by typing the directory name.
+shopt -s direxpand 2>/dev/null || true # Auto completes ENV variables
 HISTSIZE= HISTFILESIZE= # Infinite history.
+
+# https://superuser.com/questions/288714/bash-autocomplete-like-zsh
+bind 'set show-all-if-ambiguous on'
+bind 'TAB:menu-complete'
+
 
 source /usr/share/git/completion/git-completion.bash
 
