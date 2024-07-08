@@ -95,3 +95,25 @@ emoji() {
 	selected_emoji=$(curl -sSL 'https://git.io/JXXO7' | fzf)
 	echo $selected_emoji | cut -d ' ' -f1 | tr -d '\n' | xclip -selection clipboard
 }
+
+# Search for a string in files using ripgrep and fzf
+rgs() {
+	result=`rg --ignore-case --color=always --line-number --no-heading --smart-case "${*:-}" |
+		fzf --ansi \
+			--color 'hl:-1:underline,hl+:-1:underline:reverse' \
+			--delimiter ':' \
+			--preview "bat --color=always {1} --highlight-line {2}" \
+			--preview-window 'up,65%,border-bottom,+{2}+3/3,~3'`
+	file="${result%%:*}"
+	linenumber=${result#*:}
+	linenumber=${linenumber%%:*}
+	if [ ! -z "$file" ]; then
+		case "$EDITOR" in
+			code)
+				$EDITOR --goto $file:$linenumber
+				;;
+			*)  $EDITOR +"${linenumber}" "$file"
+				;;
+		esac
+	fi
+}
