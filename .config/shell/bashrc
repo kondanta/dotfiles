@@ -22,16 +22,17 @@ bind 'TAB:menu-complete'
 source /usr/share/git/completion/git-completion.bash
 
 
-[ -f "$HOME/.config/user-scripts/aliasrc" ] && source "$HOME/.config/user-scripts/aliasrc"
-[ -f "$HOME/.config/user-scripts/exports" ] && source "$HOME/.config/user-scripts/exports"
-[ -f "$HOME/.config/user-scripts/prompt" ] && source "$HOME/.config/user-scripts/prompt"
-[ -f "$HOME/.config/user-scripts/kuberc" ] && source "$HOME/.config/user-scripts/kuberc"
-[ -f "$HOME/.config/user-scripts/gen_kuberc" ] && source "$HOME/.config/user-scripts/gen_kuberc"
-[ -f "$HOME/.config/user-scripts/docker" ] && source "$HOME/.config/user-scripts/docker"
-[ -f "$HOME/.config/user-scripts/git" ] && source "$HOME/.config/user-scripts/git"
-[ -f "$HOME/.config/user-scripts/utility" ] && source "$HOME/.config/user-scripts/utility"
-[ -f "$HOME/.config/user-scripts/aws" ] && source "$HOME/.config/user-scripts/aws"
-[ -f "$HOME/.config/fzf/fzf.bash" ] && source "$HOME/.config/fzf/fzf.bash"
+[ -f "$XDG_CONFIG_HOME/user-scripts/aliasrc" ] && source "$XDG_CONFIG_HOME/user-scripts/aliasrc"
+[ -f "$XDG_CONFIG_HOME/user-scripts/exports" ] && source "$XDG_CONFIG_HOME/user-scripts/exports"
+[ -f "$XDG_CONFIG_HOME/user-scripts/prompt" ] && source "$XDG_CONFIG_HOME/user-scripts/prompt"
+[ -f "$XDG_CONFIG_HOME/user-scripts/kuberc" ] && source "$XDG_CONFIG_HOME/user-scripts/kuberc"
+[ -f "$XDG_CONFIG_HOME/user-scripts/gen_kuberc" ] && source "$XDG_CONFIG_HOME/user-scripts/gen_kuberc"
+[ -f "$XDG_CONFIG_HOME/user-scripts/docker" ] && source "$XDG_CONFIG_HOME/user-scripts/docker"
+[ -f "$XDG_CONFIG_HOME/user-scripts/git" ] && source "$XDG_CONFIG_HOME/user-scripts/git"
+[ -f "$XDG_CONFIG_HOME/user-scripts/utility" ] && source "$XDG_CONFIG_HOME/user-scripts/utility"
+[ -f "$XDG_CONFIG_HOME/user-scripts/aws" ] && source "$XDG_CONFIG_HOME/user-scripts/aws"
+[ -f "$XDG_CONFIG_HOME/fzf/shell/completion.bash" ] && source "$XDG_CONFIG_HOME/fzf/shell/completion.bash"
+[ -f "$XDG_CONFIG_HOME/fzf/shell/key-bindings.bash" ] && source "$XDG_CONFIG_HOME/fzf/shell/key-bindings.bash"
 [ -f "$XDG_CONFIG_HOME/user-scripts/tool-config" ] && source "$XDG_CONFIG_HOME/user-scripts/tool-config"
 
 function kubectl() { echo "+ kubectl \"$@\"">&2; command kubectl "$@"; }
