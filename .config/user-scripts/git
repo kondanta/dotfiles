@@ -20,6 +20,14 @@ gco() {
 	fi
 }
 
+gbd() {
+	if [ ! -z $1  ]; then
+		git branch -D $@;
+	else
+	  _fzf_git_each_ref --no-multi | xargs git branch -D
+	fi
+}
+
 gdca() { git diff --cached; }
 
 gd() { git diff; }
