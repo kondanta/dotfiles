@@ -47,8 +47,10 @@ command -v fzf >/dev/null 2>&1 && {
 # source <(kubectl completion bash)
 complete -o default -F __start_kubectl k
 
+source <(COMPLETE=bash jj)
 
-PATH="/home/kondanta/perl5/bin${PATH:+:${PATH}}"; export PATH;
+
+PATH="/usr/lib/google-cloud-sdk/bin;/home/kondanta/perl5/bin${PATH:+:${PATH}}"; export PATH;
 PERL5LIB="/home/kondanta/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/kondanta/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
 PERL_MB_OPT="--install_base \"/home/kondanta/perl5\""; export PERL_MB_OPT;
@@ -62,3 +64,4 @@ if [ -f '/usr/lib/google-cloud-sdk/path.bash.inc' ]; then . '/usr/lib/google-clo
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/usr/lib/google-cloud-sdk/completion.bash.inc' ]; then . '/usr/lib/google-cloud-sdk/completion.bash.inc'; fi
+. "/home/taylan/.local/share/cargo/env"

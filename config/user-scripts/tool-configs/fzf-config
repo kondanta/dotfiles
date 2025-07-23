@@ -16,8 +16,9 @@ export FZF_CTRL_R_OPTS="
   --color header:italic
   --header 'Press CTRL-Y to copy command into clipboard'"
 
-export FZF_ALT_C_COMMAND="bfs -color -mindepth 1 -exclude \( -name .git \) -type d -printf '%P\n' 2>/dev/null"
-export FZF_ALT_C_OPTS="$FZF_ALT_C_OPTS--ansi"
+export FZF_ALT_C_COMMAND=
+# export FZF_ALT_C_COMMAND="bfs -color -mindepth 1 -exclude \( -name .git \) -type d -printf '%P\n' 2>/dev/null"
+# export FZF_ALT_C_OPTS="$FZF_ALT_C_OPTS--ansi"
 
 _fzf_comprun() {
     local command=$1

@@ -1,0 +1,45 @@
+font:
+  normal:
+    family: "Iosevka Slab"
+    style: Regular
+
+  bold:
+    family: "Iosevka Slab"
+    style: Medium
+
+  size: 16.0
+
+bell:
+  animation: EaseOutExpo
+  color: "0xffffff"
+  duration: 0
+
+# Background opacity
+window.opactiy: 1.0
+
+selection:
+  semantic_escape_chars: ',│`|:"'' ()[]{}<>'
+
+  # When set to `true`, selected text will be copied to the primary clipboard.
+  save_to_clipboard: true
+
+live_config_reload: true
+shell:
+  program: /bin/bash
+  args:
+    - -l
+    - -c
+    - /usr/bin/tmux attach || /usr/bin/tmux
+
+debug:
+  render_timer: false
+  persistent_logging: false
+  Values for `log_level`:
+    - Off
+    - Error
+    - Warn
+    - Info
+    - Debug
+    - Trace
+  log_level: Off
+  print_events: false

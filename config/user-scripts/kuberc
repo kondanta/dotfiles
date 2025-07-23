@@ -69,7 +69,10 @@ kgv() {  k lineage $1 --output=split --show-group; }
 klsctx() { k config get-contexts; }
 ksetctx() { k config use-context $1; }
 ctx() {
-    if [ ! -z "$1" ]; then
+    if [ "$1" == "-f" ]; then
+        echo "$1 and $2"
+        kubie ctx --kubeconfig "$2"
+    elif [ ! -z "$1" ]; then
         kubie ctx $1
     else
 	kubie ctx

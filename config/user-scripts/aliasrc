@@ -25,14 +25,17 @@ alias grep="grep --color=auto" \
 	ytm="yt -x --audio-format mp3 --prefer-ffmpeg -f bestaudio/best" \
 	ytv="yt -f bestvideo+bestaudio --merge-output-format mp4" \
 	ffmpeg="ffmpeg -hide_banner" \
-    mv="mv -v" \
-    cp="cp -v" \
-	ls="eza --color=always --long --icons=always --no-time --no-filesize --git" \
-    la="ls -la" \
-    ll="ls --long -mghHUu --git --changed --time-style long-iso -@" \
+	mv="mv -v" \
+	cp="cp -v" \
+	ls="eza --color=always" \
+	la="eza --color=always --long --icons=always --no-time --no-filesize --git -a" \
+	ll="ls --long -mghHUu --git --changed --time-style long-iso -@" \
 	c="clear" \
 	vim="/usr/bin/nvim $@" \
 	e="emacs"
+
+
+
 
 # Tmux aliases
 alias t="tmux -2" \
@@ -51,7 +54,23 @@ alias md="mkdir -p" \
 	unbz2='tar -xvjf' \
 	ungz='tar -xvzf'
 
-vf() { fzf | xargs -r -I % $EDITOR % ;}
 __git_complete gco _git_checkout
 __git_complete gb _git_branch
 __git_complete gd _git_diff
+
+tm() {
+	local RESULT="$1"
+	local FOLDER=$(zoxide query $RESULT)
+    local SESSION_NAME=$(basename "$FOLDER" | tr ' .:' '_')
+
+    if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        tmux new-session -d -s "$SESSION_NAME" -c "$FOLDER"
+    fi
+
+    if [ -z "$TMUX" ]; then
+        tmux attach -t "$SESSION_NAME"
+    else
+        tmux switch-client -t "$SESSION_NAME"
+    fi
+
+}

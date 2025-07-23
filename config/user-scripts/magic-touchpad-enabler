@@ -1,0 +1,13 @@
+#!/bin/bash
+
+MAGICPAD_MAC="18:7E:B9:69:AC:B1"
+
+IS_ENABLE=$1
+
+if [ "$IS_ENABLE" = "enable" ]; then
+    bluetoothctl connect $MAGICPAD_MAC
+    sleep 1
+else
+    bluetoothctl disconnect $MAGICPAD_MAC
+    sleep 1
+fi

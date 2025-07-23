@@ -3,9 +3,12 @@
 IS_ENABLE=$1
 
 if [ "$IS_ENABLE" = "enable" ]; then
+    bluetoothctl connect 3C:A6:F6:EF:69:6C
     echo 1 | sudo tee /sys/module/hid_apple/parameters/swap_fn_leftctrl
     echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode
+    echo 1 | sudo tee /sys/module/hid_apple/parameters/swap_opt_cmd
 else
     echo 0 | sudo tee /sys/module/hid_apple/parameters/swap_fn_leftctrl
     echo 3 | sudo tee /sys/module/hid_apple/parameters/fnmode
+    echo 0 | sudo tee /sys/module/hid_apple/parameters/swap_opt_cmd
 fi

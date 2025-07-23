@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# This script clones, builds, and installs the latest stable version of Emacs
+# from source on an Arch Linux-based system.
+
+# --- Dependency Check ---
+# Before we start, let's make sure all required build dependencies are installed.
+# This list corresponds to the ./configure options used below.
+echo "--- Checking for required build dependencies..."
+dependencies=(git gcc make autoconf texinfo libtool pkg-config \
+              gtk3 tree-sitter libgccjit cairo imagemagick libsystemd)
+
+missing_deps=()
+for dep in "${dependencies[@]}"; do
+    if ! pacman -Q "$dep" &> /dev/null; then
+        missing_deps+=("$dep")
+    fi
+done
+
+if [ ${#missing_deps[@]} -gt 0 ]; then
+    echo "Error: The following required dependencies are not installed:" >&2
+    echo "${missing_deps[*]}" >&2
+    echo "Please install them using: sudo pacman -S ${missing_deps[*]}" >&2
+    exit 1
+fi
+echo "--- All dependencies are present."
+
+# --- Clone Emacs Repository ---
+# Clone the specific stable release branch for a faster, targeted download.
+echo "--- Cloning Emacs repository (branch: emacs-30.1)..."
+git clone git@github.com:emacs-mirror/emacs.git && cd emacs
+
+# --- Configure Build Options ---
+# These options enable modern features for the best experience.
+# We are explicitly building for X11, which is the correct environment
+# for window managers like dwm.
+OPTIONS=(
+  "--with-x-toolkit=gtk3"           # Build with standard GTK3 for X11 stability.
+  "--with-tree-sitter"              # Enable Tree-sitter for superior syntax parsing.
+  "--with-native-compilation"       # AOT compile Elisp to native code for a huge performance boost.
+  "--with-cairo"                    # Use the Cairo library for better 2D graphics rendering.
+  "--with-modules"                  # Allow loading dynamic modules written in C.
+  "--with-imagemagick"              # Provide support for a wide range of image formats.
+  "--with-libsystemd"               # Enable integration with systemd for notifications.
+  "--enable-link-time-optimization" # Apply further optimizations at link time.
+)
+
+# --- Run Build and Installation ---
+echo "--- Configuring Emacs..."
+./autogen.sh && ./configure "${OPTIONS[@]}"
+
+echo "--- Compiling Emacs (this will take a while)..."
+# Use -j with the number of CPU cores to speed up compilation.
+make -j$(nproc)
+
+echo "--- Installing Emacs..."
+sudo make install
+
+# --- Clean Up ---
+echo "--- Cleaning up build directory..."
+cd ..
+rm -rf emacs
+
+echo "--- Emacs from master branch has been successfully installed!"

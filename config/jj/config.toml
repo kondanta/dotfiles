@@ -2,15 +2,19 @@
 
 [user]
 name = "Taylan Dogan"
-# email = "" # I set email per project
+email = "git@taylandogan.info"
 
 [signing]
-# backend = "gpg" # Uncomment this line after adding the key. 
+backend = "gpg"
 behavior = "own"
-key = "!" # I set GPG key per project
+key = "6D2E6AFE58ADCA37!"
 
 [commit]
 sign-with-gpg = true
+
+[core]
+fsmonitor = "watchman"
+watchman.register-snpashot-trigger = true
 
 [ui]
 default-command = "log"
@@ -26,7 +30,6 @@ diff-args = ["--color=always", "$left", "$right"]
 
 [git]
 auto-local-bookmark = false
-push-bookmark-prefix = "taylan/push-"
 private-commits = 'blacklist()'
 colocate = true
 write-change-id-header = true
@@ -37,7 +40,7 @@ auto-update-stale = true
 # Revsets
 
 [revsets]
-log = "stack(@)"
+log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
 
 [revset-aliases]
 # By default, show the repo trunk, the remote bookmarks, and all remote tags. We
@@ -85,6 +88,8 @@ s = ["show"]
 pl = ["obslog", "-p"]                      # Progression log (pl)
 ll = ["log", "-T", "builtin_log_detailed"]
 c = ["commit", "--interactive"]
+l = ["log", "-r", "stack(@)"]
+n = ["new", "-r", "trunk()"]
 
 # Get all open stacks of work.
 open = ["log", "-r", "open()"]
@@ -153,6 +158,7 @@ commit_id.short() ++ " " ++ description.first_line() ++
 
 
 [templates]
+git_push_bookmark = "taylan/push-"
 # Draft commit description. Includes:
 # - Change-Id fields for Gerrit, and
 # - Signed-off-by lines
