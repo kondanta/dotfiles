@@ -9,6 +9,7 @@ $if mode=emacs
 "\ek": backward-kill-line
 "\ew": kill-word
 "\ec": capitalize-word
+"\C-q\C-e": edit-and-execute-command
 
 
 set keymap emacs
