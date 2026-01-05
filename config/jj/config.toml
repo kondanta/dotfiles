@@ -12,8 +12,8 @@ key = "6D2E6AFE58ADCA37!"
 [commit]
 sign-with-gpg = true
 
-[core]
-fsmonitor = "watchman"
+[fsmonitor]
+backend = "watchman"
 watchman.register-snpashot-trigger = true
 
 [ui]
@@ -23,6 +23,8 @@ graph.style = "square"
 commit-id-format = "shortest_unique_prefix"
 pager = { command = ["less", "-FRX"], env = { LESSCHARSET = "utf-8" } }
 should-sign-off = true
+diff-editor = "meld"                                                    # Let's try this out
+revsets-use-glob-by-default = true
 
 [merge.tools-difft]
 program = "difft"
@@ -41,6 +43,7 @@ auto-update-stale = true
 
 [revsets]
 log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
+
 
 [revset-aliases]
 # By default, show the repo trunk, the remote bookmarks, and all remote tags. We
@@ -69,6 +72,8 @@ log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
 'stack(x)' = 'ancestors(reachable(x, mutable()), 2)'
 'stack(x, n)' = 'ancestors(reachable(x, mutable()), n)'
 
+'user(x)' = 'author(x) | committer(x)'
+'mine()' = 'user("taylan.dogan@cognite.com") | user("git@taylandogan.info")'
 # The current set of "open" works. It is defined as:
 #
 # - given the set of commits not in trunk, that are written by me,
@@ -80,6 +85,10 @@ log = '@ | ancestors(trunk()..(visible_heads() & mine()), 2) | trunk()'
 # the set of 'ready()' commits. defined as the set of open commits, but nothing
 # that is blacklisted or any of their children.
 'ready()' = 'open() ~ blacklist()::'
+
+'closest_pushable(to)' = 'heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))'
+
+'closest_bookmark(x)' = 'heads(::x & bookmarks())'
 
 
 [aliases]
@@ -118,6 +127,10 @@ configure = ["config", "edit", "--repo"]
 # Pushing and Pulling
 # Sync everything
 sync = ["git", "fetch", "--all-remotes"]
+update = ["util", "exec", "--", "bash", "-c", """
+set -euo pipefail
+jj sync && jj rebase -s @ -d 'trunk()'
+"""]
 
 # The argument is for the pull request number.
 fetch-pr = ["util", "exec", "--", "bash", "-c", """
@@ -126,9 +139,37 @@ git fetch origin "pull/$1/head:pr-$1"
 jj bookmark list "pr-$1"
 """, "fetch-pr"]
 
+# Creating PR :)
+pr = [
+    "util",
+    "exec",
+    "--",
+    "bash",
+    "-c",
+    """
+gh pr create --head $(jj log -r 'closest_bookmark(@)' -T 'bookmarks' -- no-graph | cut -d ' ' -f 1)
+""",
+]
+
 pushall = ["git", "push", "--all"]
 pushc = ["git", "push", "-c", "@-", "--allow-new"]
-push = ["git", "push"]
+push = [
+    "util",
+    "exec",
+    "--",
+    "bash",
+    "-c",
+    """
+tuggable="$(jj log -r 'closest_bookmark(@)..closest_pushable(@)' -T '"n"' --no-graph)"
+[[ -n "$tuggable" ]] && jj tug
+pushable="$(jj log -r 'remote_bookmarks(remote=origin)..@' -T 'bookmarks' --no-graph)"
+[[ -n "$pushable" ]] && jj git push || echo "Nothing to push."
+closest="$(jj log -r 'closest_bookmark(@)' -n 1 -T 'bookmarks' --no-graph | cut -d ' ' -f 1)"
+closest="${closest%\\*}"
+tracked="$(jj bookmark list -r ${closest} -t -T 'if(remote == "origin", name)')"
+[[ "$tracked" == "$closest" ]] || jj bookmark track "${closest}@origin"
+""",
+]
 
 
 [colors]
@@ -158,7 +199,8 @@ commit_id.short() ++ " " ++ description.first_line() ++
 
 
 [templates]
-git_push_bookmark = "taylan/push-"
+log = "builtin_log_compact ++ if(!description && !empty, diff.summary())"
+git_push_bookmark = '"taylan/push-" ++ change_id.short()'
 # Draft commit description. Includes:
 # - Change-Id fields for Gerrit, and
 # - Signed-off-by lines
