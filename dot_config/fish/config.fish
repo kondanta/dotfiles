@@ -9,6 +9,7 @@ if status is-interactive
     command -v starship &> /dev/null && starship init fish | source
     command -v direnv &> /dev/null && direnv hook fish | source
     command -v zoxide &> /dev/null && zoxide init fish | source
+    command -q fzf && fzf --fish | source
 
     cat ~/.local/state/caelestia/sequences.txt 2> /dev/null
 
