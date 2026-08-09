@@ -1,3 +1,6 @@
+set -gx EDITOR nvim
+set -gx VISUAL nvim
+
 if status is-interactive && not set -q TMUX
     exec tmux new-session -A -s main
 end
