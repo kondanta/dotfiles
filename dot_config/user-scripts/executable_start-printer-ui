@@ -1,0 +1,20 @@
+#/bin/bash
+
+# Note(taylan): So, `systemd-resolved(sd-resolved)`'s mDNS does not implement dns-sd and because of that
+# CUPS does not work with sd-resolved. It requires avahi-deamon to be running to auto detect
+# local printers. As of right now, I use mDNS with sd-resolved. The following code should:
+# - edit /etc/systemd/resolved.conf -> disable mDNS
+# - systemctl restart systemd-resolved
+# - systemctl start avahi-daemon
+# And revert those changes when it is done. 
+
+if [ $(systemctl is-active cups) = "active" ]; then
+    echo "CUPS service is running"
+    system-config-printer
+    sudo systemctl stop cups
+else
+    sudo systemctl start cups
+    sleep 2
+    system-config-printer
+    sudo systemctl stop cups
+fi

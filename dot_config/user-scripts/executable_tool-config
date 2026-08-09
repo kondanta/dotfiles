@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Source everything inside tool-configs folder
+for file in $XDG_CONFIG_HOME/user-scripts/tool-configs/*; do
+    source $file
+done
+
+[ -f $XDG_CONFIG_HOME/fzf-plugins/fzf-git.sh/fzf-git.sh ] && \
+  source $XDG_CONFIG_HOME/fzf-plugins/fzf-git.sh/fzf-git.sh
+[ -f $XDG_CONFIG_HOME/fzf-plugins/fuzzy-sys/fuzzy-sys.plugin.sh ] && \
+source $XDG_CONFIG_HOME/fzf-plugins/fuzzy-sys/fuzzy-sys.plugin.sh

@@ -1,0 +1,18 @@
+{
+    "appearance": {
+        "transparency": {
+            "enabled": true
+        }
+    },
+    "bar": {
+        "workspaces": {
+            "perMonitorWorkspaces": true
+        }
+    },
+    "services": {
+        "weatherLocation": "59.9069,10.6333"
+    },
+    "sidebar": {
+        "enabled": true
+    }
+}

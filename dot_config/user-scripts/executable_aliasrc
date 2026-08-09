@@ -1,0 +1,83 @@
+#!/bin/sh
+
+# System related aliases
+alias p="sudo pacman" \
+	SS="fuzzy-sys" \
+	Ss="fuzzy-sys -u" \
+	f="$FILE" \
+	g="git" \
+	sdn="sudo shutdown -h now" \
+	lsp="pacman -Qett --color=always | less" \
+	c="clear" \
+	nf="clear && neofetch" \
+	du="dust" \
+	pst="xclip -selection clipboard -o" \
+	cpy="xclip -selection clipboard" \
+	cal="cal -w" \
+	md="mkdir -p" \
+	d="cd ~/Downloads && ls -la" \
+	D="cd ~/Documents && ls -la"
+
+# Tooling aliases
+alias grep="grep --color=auto" \
+	ccat="highlight --out-format=ansi" \
+	yt="youtube-dl --add-metadata -i -o '%(title)s.%(ext)s'" \
+	ytm="yt -x --audio-format mp3 --prefer-ffmpeg -f bestaudio/best" \
+	ytv="yt -f bestvideo+bestaudio --merge-output-format mp4" \
+	ffmpeg="ffmpeg -hide_banner" \
+	mv="mv -v" \
+	cp="cp -v" \
+	ls="eza --color=always" \
+	la="eza --color=always --long --icons=always --no-time --no-filesize --git -a" \
+	ll="ls --long -mghHUu --git --changed --time-style long-iso -@" \
+	c="clear" \
+	vim="/usr/bin/nvim $@" \
+	e="emacsclient -c -a emacs"
+
+# Tmux aliases
+alias t="tmux -2" \
+	tn="t new -s" \
+	ta="t a -t" \
+	tls="t ls" \
+	tk="t kill-window -t" \
+
+
+# Zipping aliases
+alias md="mkdir -p" \
+	mktar='tar -cvf' \
+	mkbz2='tar -cvjf' \
+	mkgz='tar -cvzf' \
+	untar='tar -xvf' \
+	unbz2='tar -xvjf' \
+	ungz='tar -xvzf'
+
+# Pacman aliases
+alias pkgInfo="pacman -Qq | fzf --preview 'pacman -Qil {} | bat -fpl yml' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'" 
+
+__git_complete gco _git_checkout
+__git_complete gb _git_branch
+__git_complete gd _git_diff
+
+tm() {
+	local RESULT="$1"
+	local FOLDER=$(zoxide query $RESULT)
+    local SESSION_NAME=$(basename "$FOLDER" | tr ' .:' '_')
+
+    if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        tmux new-session -d -s "$SESSION_NAME" -c "$FOLDER"
+    fi
+
+    if [ -z "$TMUX" ]; then
+        tmux attach -t "$SESSION_NAME"
+    else
+        tmux switch-client -t "$SESSION_NAME"
+    fi
+
+}
+
+packages-by-date() {
+    pacman -Qi | grep '^\(Name\|Install Date\)\s*:' | cut -d ':' -f 2- | paste - - | while read pkg_name install_date
+    do install_date=$(date --date="$install_date" -Iseconds)
+       echo "$install_date $pkg_name"
+    done | sort
+}

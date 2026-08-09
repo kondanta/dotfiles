@@ -1,0 +1,698 @@
+#+title: Emacs Configuration
+#+author: Taylan Doğan
+# #+property: header-args:emacs-lisp :tangle +(expand-file-name "config.el" user-emacs-directory)
+#+begin_src emacs-lisp :tangle (expand-file-name "config.el" user-emacs-directory)
+  ;;; config.el --- My Personal Emacs Configuration      -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;; This file is tangled from my config.org.  It contains all my personal
+  ;; settings, package configurations, and custom functions.
+
+  ;;; Code:
+#+end_src
+* 1. Core Settings
+This section contains fundamental UI and behaviour tweaks that don't require external packages.
+
+** User Information
+#+begin_src emacs-lisp
+  (setq user-full-name "Taylan Doğan"
+        user-mail-address "git@taylandogan.info")
+#+end_src
+
+** UI Tweaks
+#+begin_src emacs-lisp
+  ;; Disable annoying UI elements
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (blink-cursor-mode -1)
+
+  ;; More useful UI elements
+  (show-paren-mode 1)       ;; Highlight matching parentheses
+  (electric-pair-mode 1)    ;; Auto-insert closing parentheses
+  (column-number-mode 1)    ;; Show column number in the mode line
+  (global-display-line-numbers-mode 1) ;; Show line numbers globally
+  (global-prettify-symbols-mode 1) ;; Use nice symbols for things like 'lambda'
+  (size-indication-mode t)
+
+  ;; Other UI settings
+  (setq inhibit-startup-screen t)
+  (setq ring-bell-function 'ignore)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
+
+  ;; Disable transparency
+  (set-frame-parameter (selected-frame)'alpha '(100 . 100))
+  (add-to-list 'default-frame-alist'(alpha . (100 . 100)))
+
+  ;; Highlight current line
+  (when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
+
+  ;; Prettify symbols in programming modes
+  (add-hook 'prog-mode-hook #'prettify-symbols-mode)
+
+  ;; Display the time in the mode line in 24-hour format
+  (setq display-time-24hr-format t)
+  (display-time-mode 1)
+#+end_src
+
+** Behavior and Editing
+#+begin_src emacs-lisp
+  (setq load-prefer-newer t)
+  (setq require-final-newline t)
+  (setq debug-on-error t)
+  (setq tab-always-indent 'complete)
+  (global-subword-mode 1)
+  (delete-selection-mode 1)
+
+  ;; Increase stack depth to prevent errors with complex packages
+  (setq max-specpdl-size 32000)
+
+  ;; Set a high threshold for large files
+  (setq large-file-warning-threshold 100000000)
+
+  ;; Nice scrolling settings
+  (setq scroll-margin 8
+        scroll-conservatively 101
+        scroll-preserve-screen-position t)
+
+  ;; Automatically revert buffers when files change on disk
+  (global-auto-revert-mode 1)
+#+end_src
+
+** Encoding
+#+begin_src emacs-lisp
+  (set-language-environment "UTF-8")
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+#+end_src
+
+** Backups
+#+begin_src emacs-lisp
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups/"))
+        backup-by-copying t      ; Don't de-link hard links
+        version-control t        ; Use version numbers on backups
+        delete-old-versions t    ; Automatically delete excess backups
+        kept-new-versions 20     ; How many of the newest versions to keep
+        kept-old-versions 5      ; and how many of the old
+        auto-save-default nil    ; I don't want auto-save files
+        create-lockfiles nil)    ; or lockfiles
+#+end_src
+
+* 2. Packages
+This section configures all external packages using use-package.
+** Foundational Packages
+#+begin_src emacs-lisp
+  ;; Ensure GUI emacs inherits the hsell's PATH
+  (use-package exec-path-from-shell
+    :init
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize)))
+
+  ;; Asynchronous operations for perf
+  (use-package async
+    :init (dired-async-mode 1))
+#+end_src
+** Theme & Aesthetics
+#+begin_src emacs-lisp
+  (use-package srcery-theme
+    :config
+    (load-theme 'srcery t))
+
+  (use-package all-the-icons
+    :if (display-graphic-p)
+    :config
+    (set-fontset-font t 'unicode "Symbol Nerd Font" nil 'prepend))
+
+  (use-package dashboard
+    :if (< (length command-line-args) 2)
+    :config
+    (dashboard-setup-startup-hook)
+    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    (setq dashboard-center-content t)
+    (setq dashboard-items '((recents   . 7)
+                            (bookmarks . 3)
+                            (projects  . 7)
+                            (registers . 3))))
+
+  (use-package spaceline
+    :config
+    (require 'spaceline-config)
+    (setq powerline-default-separator 'arrow)
+    (spaceline-spacemacs-theme))
+
+  ;; Hide minor mode names from the modeline
+  (use-package diminish
+    :config
+    (diminish 'which-key-mode)
+    (diminish 'subword-mode)
+    (diminish 'rainbow-mode)
+    (diminish 'rainbow-delimiters-mode)
+    (diminish 'flycheck-mode)
+    (diminish 'abbrev-mode)
+    (diminish 'yas-minor-mode))
+
+  ;; Set the default font family and size
+  (set-face-attribute 'default nil
+  		    :font "Iosevka Term Slab Nerd Font"
+  		    :height 200)
+
+  ;; Adding the default font to this default-frame-alist to make is usable
+  ;; inside the emacsclient as well 
+  (add-to-list 'default-frame-alist '(font . "Iosevka Term Slab Nerd Font-20"))
+#+end_src
+** Completion (V-MOCE + Corfu)
+This is the modern stack for completion, search, and in-buffer completion UI.
+#+begin_src emacs-lisp
+    (unless (fboundp 'set-local)
+      (defun set-local (variable value)
+        (set (make-local-variable variable) value)))
+
+    (use-package compat
+      :straight t
+      :demand t)
+
+    ;; Completion UI
+    (use-package vertico
+      :init (vertico-mode))
+
+    ;; Completion Style
+    (use-package orderless
+      :custom
+      (completion-styles '(orderless basic))
+      (completion-category-defaults nil)
+      (completion-category-overrides '((file (styles . (partial-completion)))))
+      )
+
+    ;; Annotations in the minibuffer
+    (use-package marginalia
+      :init (marginalia-mode))
+
+    ;; Enhanced commands (M-x, C-x b, C-s)
+    (use-package consult
+      :demand t ;; Load immediately to ensure aliases are defined
+      :bind (("C-x b" . consult-buffer)
+             ("C-s" . consult-line)
+    	 ("C-c c f" . consult-fd)
+    	 ("C-c c g" . consult-ripgrep))
+      )
+
+    ;; Contextual actions
+    (use-package embark
+      :bind (("C-." . embark-act)
+             ("C-;" . embark-dwim)))
+
+    (use-package embark-consult
+      :after (embark consult))
+
+    ;; In-buffer completion UI
+    (use-package corfu
+      :custom
+      (corfu-auto t)
+      (corfu-cycle t)
+      (corfu-auto-delay 0.2)
+      :init
+      (global-corfu-mode))
+#+end_src
+
+** General Editing Enhancements
+#+begin_src emacs-lisp
+  (use-package which-key
+    :init (which-key-mode))
+
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+  (use-package rainbow-mode
+    :hook (prog-mode . rainbow-mode))
+
+  (use-package avy
+    :bind ("M-s" . avy-goto-char))
+
+  (use-package expand-region
+    :bind ("C-q" . er/expand-region))
+
+  (use-package mark-multiple
+    :bind ("C-c q" . 'mark-next-like-this))
+
+  (use-package move-text
+    :config (move-text-default-bindings))
+#+end_src
+
+** Development (LSP, Magit, etc.)
+#+begin_src emacs-lisp
+  (use-package apheleia
+    :ensure t
+    :config
+    ;; --- 1. Async LSP Bridge ---
+    (cl-defun my/apheleia-lsp-async (&key buffer scratch callback &allow-other-keys)
+      "Format BUFFER using LSP asynchronously.
+       When LSP returns edits, apply them to SCRATCH and call CALLBACK."
+      (with-current-buffer buffer
+        (if (and (bound-and-true-p lsp-mode)
+                 (lsp-feature? "textDocument/formatting"))
+            ;; Send the request asynchronously
+            (lsp-request-async
+             "textDocument/formatting"
+             (lsp--make-document-formatting-params)
+             ;; Success Handler: runs when LSP replies
+             (lambda (edits)
+               (when edits
+                 (with-current-buffer scratch
+                   (lsp--apply-text-edits edits scratch)))
+               ;; CRITICAL: Tell Apheleia we are done
+               (funcall callback)))
+          ;; If LSP isn't active, just finish immediately
+          (funcall callback))))
+
+    ;; --- 2. Register Formatters ---
+    
+    ;; Register our new async LSP formatter
+    (setf (alist-get 'lsp-async apheleia-formatters) #'my/apheleia-lsp-async)
+    ;; Register yamlfmt
+    (setf (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "-in"))
+    (setf (alist-get 'gofumpt apheleia-formatters) '("gofumpt"))
+
+    ;; --- 3. Map Modes to Formatters ---
+
+    ;; BINARIES (Fast, external tools)
+    (setf (alist-get 'go-mode apheleia-mode-alist) '(goimports gofumpt))
+    (setf (alist-get 'rust-mode apheleia-mode-alist) 'rustfmt)
+    (setf (alist-get 'yaml-mode apheleia-mode-alist) 'yamlfmt)
+
+    ;; LSP (Async)
+    (setf (alist-get 'toml-mode apheleia-mode-alist) 'lsp-async)
+
+    (apheleia-global-mode +1))
+
+  ;; Snippets
+  (use-package yasnippet
+    :init (yas-global-mode 1))
+
+  (use-package yasnippet-snippets)
+
+  (use-package yasnippet-capf
+    :ensure t
+    :config
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
+  ;; Completion backends
+  (use-package cape
+    :after yasnippet
+    ;;:init
+    :config
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
+  ;; On-the-fly syntax checking
+  (use-package flycheck
+    :init (global-flycheck-mode))
+
+  ;; Language Server Protocol
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook ((prog-mode . (lambda()
+                         	(unless (derived-mode-p 'emacs-lisp-mode)
+                         	  (lsp-deferred))))
+           (lsp-mode . lsp-enable-which-key-integration))
+    :custom
+    (lsp-completion-provider :capf) ;; Use Corfu
+    (lsp-prefer-flymake nil)
+    (lsp-yaml-schemas-enable t))
+
+  (use-package lsp-ui
+    :after lsp-mode
+    :custom
+    (lsp-ui-doc-position 'at-point)
+    (lsp-ui-doc-show-with-cursor t)
+    (lsp-ui-doc-delay 0.5))
+
+
+  ;; Git integration
+  ;; (use-package magit
+  ;;  :bind ("C-x g" . magit-status))
+
+  ;; Project management
+  (use-package projectile
+    :init (projectile-mode 1)
+    :bind (:map projectile-mode-map
+                ("C-c p" . projectile-command-map)))
+
+;; Custom configuration for yayamlls
+  (with-eval-after-load 'lsp-mode
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection "yayamlls")
+      :major-modes '(yaml-mode)
+      :server-id 'yayamlls
+      ;; Use an activation function to search for your root markers
+      :activation-fn (lambda (file-name _mode)
+                       (when file-name
+                         (let ((root (or (lsp-find-session-folder (lsp-session) file-name)
+                                         (locate-dominating-file file-name ".yayamlls.yaml")
+                                         (locate-dominating-file file-name ".git"))))
+                           (and root (cons root nil))))))))
+
+  ;; Copilot LSP
+  ;;(use-package copilot
+  ;;  :straight (:host github :repo "copilot-emacs/copilot.el"
+  ;;                   :files ("*.el" "dist"))
+  ;;  :hook (prog-mode . copilot-mode)
+  ;;  :bind (:map copilot-completion-map
+  ;;              ("C-<tab>" . copilot-accept-completion)
+  ;;              ("C-c C-n" . copilot-next-completion)
+  ;;              ("C-c C-p" . copilot-previous-completion)
+  ;;              ("C-c C-d" . copilot-clear-overlay)))
+
+  ;; A new way of installing packages
+  (use-package copilot
+    :vc (:url "https://github.com/copilot-emacs/copilot.el"
+  	    :rev :newest
+  	    :branch :main)
+    :init
+    (setq copilot-server-executable "copilot-language-server")
+    :bind :bind (:map copilot-completion-map
+  		    ("C-<tab>" . copilot-accept-completion)
+  		    ("C-c C-n" . copilot-next-completion)
+  		    ("C-c C-p" . copilot-previous-completion)
+  		    ("C-c C-d" . copilot-clear-overlay)))
+
+  (defun my/copilot-disable-p ()
+    "Return non-nil if Copilot should be disabled in this b
+                  uffer."
+    (or (minibufferp)
+        (derived-mode-p 'org-mode)))
+
+  ;;(add-hook 'copilot-mode-hook
+  ;;          (lambda ()
+  ;;            (when (my/copilot-disable-p)
+  ;;              (copilot-mode -1))))
+
+#+end_src
+
+** Language-specific Packages
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+    :mode "\\.ya?ml\\'"
+    :hook (yaml-mode . lsp-deferred))
+
+  (use-package dockerfile-mode
+    :mode "Dockerfile")
+
+  (use-package docker-compose-mode)
+
+  (use-package terraform-mode
+    :hook (terraform-mode . lsp-deferred)
+    :config
+    (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
+  (use-package rustic
+    :hook ((rustic-mode . lsp-deferred)
+    	 (rustic-mode . prettify-symbols-mode))
+    :custom
+    (rustic-lsp-client 'lsp-mode)
+    (rustic-format-on-save nil)
+    (rustic-format-trigger nil)
+    (rustic-carg-use-last-stored-arguments t)
+    (rustic-rustfmt-bin "~/.local/share/cargo/bin/rustfmt"))
+
+  (use-package toml-mode
+    :mode "/\\(\\.toml\\|Cargo.lock\\|\\.cargo/config\\)\\'"
+    :hook (toml-mode . lsp-deferred))
+
+  (use-package go-mode
+    :ensure t
+    :mode "\\.go\\'"
+    :hook
+    (go-mode . lsp-deferred))
+
+  (use-package jsonnet-mode
+    :ensure t
+    :mode "\\.jsonnet\\'"
+    :hook
+    (jsonnet-mode . lsp-deferred))
+
+  (use-package just-mode
+    :ensure t
+    :mode "\\.just"
+    :hook
+    (just-mode . lsp-deferred))
+  #+end_src
+
+* 3. Custom Functions and Keybindings
+#+begin_src emacs-lisp
+  ;; Unset C-z
+  (global-unset-key (kbd "C-z"))
+
+  ;; Remap other-window (C-x o) to use switch-window
+  (use-package switch-window
+    :bind ([remap other-window] . switch-window)
+    :config
+    (setq switch-window-increase 4)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts ' ("h" "j" "k" "l" "a" "s" "d")))
+
+  ;; Edit and reload config
+  (defun my-config-visit ()
+    (interactive)
+    (find-file (expand-file-name "config.org" user-emacs-directory)))
+
+  (defun my-config-reload ()
+    (interactive)
+    (org-babel-load-file (expand-file-name "config.org" user-emacs-directory)))
+
+  (global-set-key (kbd "C-c e") #'my-config-visit)
+  (global-set-key (kbd "C-c r") #'my-config-reload)
+
+  ;; Comment region or line
+  (defun my-comment-or-uncomment-line ()
+    "Comment or uncomment the current line or region."
+    (interactive)
+    (let ((beg (if (region-active-p) (region-beginning) (line-beginning-position)))
+          (end (if (region-active-p) (region-end) (line-end-position))))
+      (comment-or-uncomment-region beg end)))
+
+  (global-set-key (kbd "C-?") #'my-comment-or-uncomment-line)
+
+  ;; Open terminal
+  (global-set-key (kbd "<S-return>") 'term)
+
+  ;; Window splitting
+  (defun my-split-vertical ()
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+
+  (defun my-split-horizontal ()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+
+  (global-set-key (kbd "C-c j") 'my-split-vertical)
+  (global-set-key (kbd "C-c l") 'my-split-horizontal)
+
+
+
+  ;; Custom kill/copy functions
+  (defun my-kill-word-at-point ()
+    "Kill the word at point."
+    (interactive)
+    (let ((bounds (bounds-of-thing-at-point 'word)))
+      (when bounds
+        (kill-region (car bounds) (cdr bounds)))))
+
+  (defun my-kill-word-backward ()
+    (interactive)
+    (backward-word)
+    (kill-word 1))
+
+  (defun my-copy-line()
+    (interactive)
+    (save-excursion
+      (kill-new
+       (buffer-substring
+        (point-at-bol)
+        (point-at-eol)))))
+
+  (global-set-key (kbd "C-c w") 'my-kill-word-at-point)
+  (global-set-key (kbd "C-c d") 'my-kill-word-backward)
+  (global-set-key (kbd "C-c y y") 'my-copy-line)
+
+  ;; For code navigation
+  (global-set-key (kbd "C-c C-c r") 'xref-find-references)
+
+  ;; For whitespace management
+  (global-set-key (kbd "M-SPC") 'cycle-spacing)
+
+  ;; For consistent newlines
+  (global-set-key (kbd "RET") 'newline-and-indent)
+  ;; Kill the word at point
+  (defun my-kill-thing-at-point (thing)
+    "Kill the `thing-at-point' for the specified kind of THING."
+    (let ((bounds (bounds-of-thing-at-point thing)))
+      (if bounds
+          (kill-region (car bounds) (cdr bounds))
+        (error "No %s at point" thing))))
+
+  (defun my-kill-word-at-point ()
+    "Kill the word at point."
+    (interactive)
+    (my-kill-thing-at-point 'word))
+
+  (global-set-key (kbd "C-c w") 'my-kill-word-at-point)
+
+  ;; Kill the word before point
+  (defun my-kill-word-backward ()
+    (interactive)
+    (backward-word)
+    (kill-word 1))
+  (global-set-key (kbd "C-c d") 'my-kill-word-backward)
+
+  ;; Copy the current line
+  (defun my-copy-line()
+    (interactive)
+    (save-excursion
+      (kill-new
+       (buffer-substring
+        (point-at-bol)
+        (point-at-eol)))))
+  (global-set-key (kbd "C-c y y") 'my-copy-line)
+
+  ;; Kill the current buffer without prompting
+  (defun my-kill-current-buffer ()
+    "Kills the current buffer."
+    (interactive)
+    (kill-buffer (current-buffer)))
+  (global-set-key (kbd "C-x k") 'my-kill-current-buffer)
+
+  ;; --- Packages for Editing ---
+
+  ;; For moving lines up and down
+  (use-package move-text
+    :config
+    (move-text-default-bindings))
+#+end_src
+** Auto-tangle configuration on save
+#+begin_src emacs-lisp
+(defun my/tangle-config-on-save ()
+"Automatically tangle the config.org file when it is saved."
+(when (string-equal (buffer-file-name)
+(expand-file-name "config.org" user-emacs-directory))
+(let ((org-confirm-babel-evaluate nil))
+(org-babel-tangle))))
+
+(add-hook 'after-save-hook #'my/tangle-config-on-save)
+** Toggle LSP Documentation
+#+begin_src emacs-lisp
+  (defun my/toggle-lsp-ui-doc ()
+    "Show or hide the lsp-ui documentation popup."
+    (interactive)
+    (if (lsp-ui-doc--frame-visible-p)
+        (lsp-ui-doc-hide)
+      (lsp-ui-doc-show)))
+
+  ;; Bind the toggle function to "C-c h d" (Control-c, h, then d)
+  (global-set-key (kbd "C-c h d") #'my/toggle-lsp-ui-doc)
+#+end_src
+
+* 4. Org Mode
+This section configures Org Mode and related packages.
+
+** Easy Templates for Source Blocks
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("js" . "src js"))
+#+end_src
+
+** General Org Settings
+#+begin_src emacs-lisp
+  (setq org-ellipsis " ⤵"
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-confirm-babel-evaluate nil
+        org-export-with-smart-quotes t
+        org-support-shift-select 'always
+        org-enforce-todo-dependencies t
+        org-directory "~/Documents/notes/org-roam"
+        org-archive-location (concat org-directory "/archive.org::* From %s"))
+
+  (setq org-agenda-files (list org-directory))
+  (add-hook 'org-mode-hook 'org-indent-mode)
+#+end_src
+
+** Org Bullets & Symbols
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :hook (org-mode . org-bullets-mode))
+
+  (add-hook 'org-mode-hook (lambda ()
+  			   "Beautify Org Checkbox Symbol"
+  			   (push '("[ ]" .  "☐") prettify-symbols-alist)
+  			   (push '("[X]" . "☑" ) prettify-symbols-alist)
+  			   (push '("[-]" . "❍" ) prettify-symbols-alist)
+  			   (prettify-symbols-mode)))
+#+end_src
+
+** Org Clocking and Task Management
+#+begin_src emacs-lisp
+  ;; Log when a task is marked DONE
+  (setq org-log-done 'time)
+  (setq org-deadline-warning-days 7)
+  (setq org-agenda-show-all-dates t)
+
+  ;; Clocking settings
+  (setq org-clock-out-when-done t)
+  (setq org-clock-in-resume t)
+  (setq org-clock-persist t)
+  (setq org-clock-idle-time nil)
+  (setq org-clock-continuously nil)
+
+  ;; Custom function to mark done and archive
+  (defun kon/mark-done-and-archive ()
+    "Mark task done and archive it."
+    (interactive)
+    (org-todo 'done)
+    (org-archive-subtree))
+
+  (define-key org-mode-map (kbd "C-c C-x C-s") 'kon/mark-done-and-archive)
+
+  ;; Custom function to ask for effort when clocking in
+  (defun my/org-mode-ask-effort ()
+    "Ask for an effort estimate when clocking in."
+    (unless (org-entry-get (point) "Effort")
+      (let ((effort
+             (completing-read
+              "Effort: "
+              (org-entry-get-multivalued-property (point) "Effort"))))
+        (unless (equal effort "")
+          (org-set-property "Effort" effort)))))
+
+  (add-hook 'org-clock-in-prepare-hook 'my/org-mode-ask-effort)
+#+end_src
+
+* 5. Platform Specific
+I stopped using mac already but, just in case :)
+#+begin_src emacs-lisp
+  (when (eq system-type 'darwin)
+    (setq mac-command-modifier nil)
+    (setq mac-option-modifier 'meta))
+#+end_src
+
+* 6. File Footer
+#+begin_src emacs-lisp
+  (provide 'config)
+
+  ;;; config.el ends here
+#+end_src

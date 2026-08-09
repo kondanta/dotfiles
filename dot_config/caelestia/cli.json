@@ -1,0 +1,18 @@
+{
+    "toggles": {
+        "communication": {
+            "vesktop": {
+                "enable": true,
+                "match": [{ "class": "vesktop" }],
+                "command": ["vesktop"],
+                "move": true
+            },
+            "discord": {
+                "enable": false
+            },
+            "whatsapp": {
+                "enable": false
+            }
+        }
+    }
+}

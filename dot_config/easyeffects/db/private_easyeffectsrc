@@ -1,0 +1,14 @@
+[StreamInputs]
+inputDevice=alsa_input.pci-0000_0b_00.4.analog-stereo
+plugins=rnnoise#0,gate#0,deesser#0,compressor#0,equalizer#0,limiter#0
+visiblePage=pluginsPage
+visiblePlugin=rnnoise#0
+
+[StreamOutputs]
+outputDevice=alsa_output.pci-0000_0b_00.4.analog-stereo
+
+[Window]
+autostartOnLogin=true
+height=1398
+visiblePipeWirePage=testSignalsPage
+width=1228

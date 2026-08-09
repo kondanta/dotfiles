@@ -1,0 +1,4 @@
+# Only init.el and config.org are tracked — exclude everything else
+*
+!init.el
+!config.org

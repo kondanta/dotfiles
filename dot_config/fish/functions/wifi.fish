@@ -1,0 +1,3 @@
+function wifi
+    nmtui
+end

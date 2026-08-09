@@ -1,0 +1,48 @@
+#!/bin/bash
+
+level=$1
+multiplier=$2
+max=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+current=$(cat /sys/class/backlight/intel_backlight/brightness)
+min=5787
+step=1000
+
+if [ -z $multiplier ]; then
+    multiplier=1
+fi
+
+if [ -z $level ]; then
+    level=$current
+fi
+
+usage() {
+    echo "Usage: $0 <up|down|level> [multiplier]"
+    exit 1
+}
+
+case $level in
+    "up")
+        new=$(($current + ($step*$multiplier)))
+        if [ $new -gt $max ]; then
+            new=$max
+        fi
+        ;;
+    "down")
+        new=$(($current - ($step*$multiplier)))
+        if [ $new -lt $min ]; then
+            new=$min
+        fi
+        ;;
+    *)
+        if (( $level >= $min && $level <= $max )); then
+            new=$level
+        else
+            usage
+        fi
+        ;;
+esac
+echo "New brightness level: $new"
+sudo -s << END_OF_SUDO
+echo $new > /sys/class/backlight/intel_backlight/brightness
+END_OF_SUDO
+sudo -k

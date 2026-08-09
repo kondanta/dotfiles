@@ -1,0 +1,108 @@
+#!/bin/sh
+
+ec2find() {
+    if [ "$#" -lt 3 ]; then echo "Provide -r -p -t"; return 1; fi
+
+    while [ "$#" -gt 0 ]; do
+	case "$1" in
+	    -r) region="$2"; shift 2;;
+	    -p) profile="$2"; shift 2;;
+	    -t) itype="$2"; shift 2;;
+	    *) echo "Unrecognized param! Available ones: -r region, \
+	-p for profile -t for instance type"; return 1;
+	esac
+    done
+
+    if [ "$profile" == "default" ]; then
+	aws --region $region ec2 describe-instances \
+	| jq ".Reservations[].Instances[]
+	| select((.Tags[] | select(.Key == \"Type\") |.Value) == "\"$itype\"")
+	| {Name: (.Tags[] | select(.Key==\"Name\")|.Value),
+	InstanceID: .InstanceId, PrivateIP: .PrivateIpAddress,
+	PublicIP: .PublicIpAddress, VPCID: .VpcId, SubnetID: .SubnetId}"
+    else
+	aws --region $region ec2 describe-instances --profile "$profile" \
+	| jq ".Reservations[].Instances[]
+	| select((.Tags[] | select(.Key == \"Type\") |.Value) == "\"$itype\"")
+	| {Name: (.Tags[] | select(.Key==\"Name\")|.Value),
+	InstanceID: .InstanceId, PrivateIP: .PrivateIpAddress,
+	PublicIP: .PublicIpAddress, VPCID: .VpcId, SubnetID: .SubnetId}"
+    fi
+}
+
+awsvault() {
+        if [ "$#" -lt 2 ]; then echo "Provide -p -t"; return 1; fi
+        while [ "$#" -gt 0 ]; do
+	case "$1" in
+	    -t) tokenProfile="$2"; shift 2;;
+	    -p) profile="$2"; shift 2;;
+	    *) echo "Unrecognized param! Available ones: -t token, \
+	-p for profile"; return 1;
+	esac
+    done
+    token=$(notp get "$tokenProfile" --stdin)
+    shift
+    /usr/local/bin/aws-vault exec "$profile" -t "$token"
+}
+
+ec2summary() {
+    if [ "$#" -lt 3 ]; then echo "Provide -r -p -t"; return 1; fi
+
+    while [ "$#" -gt 0 ]; do
+	case "$1" in
+	    -r) region="$2"; shift 2;;
+	    -p) profile="$2"; shift 2;;
+	    *) echo "Unrecognized param! Available ones: -r region, -p for profile"; return 1;
+	esac
+    done
+
+    if [ "$profile" == "default" ]; then
+	aws --region $region ec2 describe-instances \
+	    |
+	    jq '.Reservations[].Instances[] | select(.State.Name!="terminated")
+	    | {Name: (.Tags[]|select(.Key=="Name")|.Value), InstanceId: .InstanceId, PublicIp: .PublicIpAddress}'
+    else
+	aws --region $region ec2 describe-instances --profile "$profile" \
+	    |
+	    jq '.Reservations[].Instances[] | select(.State.Name!="terminated")
+	    | {Name: (.Tags[]|select(.Key=="Name")|.Value), InstanceId: .InstanceId,  PublicIp: .PublicIpAddress}'
+    fi
+}
+
+ec2tagcompilance() {
+    required_tags='["Environment","Type","Project","Name","Region","Zone"]'
+
+    while [ "$#" -gt 0 ]; do
+	case "$1" in
+	    -r) region="$2"; shift 2;;
+	    -p) profile="$2"; shift 2;;
+	    *) echo "Unrecognized param! Available ones: -r region, \
+	-p for profile"; return 1;
+	esac
+    done
+
+    if [ "$profile" == "default" ]; then
+	instances=$(aws --region $region ec2 describe-instances)
+	echo $instances | jq "[.Reservations | .[] | .Instances | .[] | select(.Tags | [.[] | .Key] | contains($required_tags) | not)]" | jq '
+	[.[] | select(.State.Name!="terminated") | select(([.Tags | .[] | .Key]) | contains(["CloudEndure creation time"]) | not) | {
+  	InstanceId: .InstanceId,
+  	InstanceName: (.Tags | from_entries | .Name),
+  	MissingTags: (('$required_tags') - ([.Tags | .[] | .Key]))
+	}]'
+    else
+	instances=$(aws --region $region ec2 describe-instances --profile $profile)
+	echo $instances | jq "[.Reservations | .[] | .Instances | .[] | select(.Tags | [.[] | .Key] | contains($required_tags) | not)]" | jq '
+	[.[] | select(.State.Name!="terminated") | select(([.Tags | .[] | .Key]) | contains(["CloudEndure creation time"]) | not) | {
+  	InstanceId: .InstanceId,
+  	InstanceName: (.Tags | from_entries | .Name),
+  	MissingTags: (('$required_tags') - ([.Tags | .[] | .Key]))
+	}]'
+    fi
+}
+
+ec2find(){
+    for region in `aws --region eu-central-1 ec2 describe-regions --output text | cut -f4`; do
+	echo "$region"; aws --region $region ec2 describe-instances \
+	    | jq ".Reservations[].Instances[] | select (.PublicIpAddress=="\"$1\"")| {Name: (.Tags[] | select(.Key==\"Name\")|.Value), InstanceID: .InstanceId, PrivateIP: .PrivateIpAddress, PublicIP: .PublicIpAddress}"
+    done
+}
