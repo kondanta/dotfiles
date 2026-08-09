@@ -164,8 +164,6 @@ hl.bind(mainMod .. " + CONTROL + mouse_down", hl.dsp.focus({ workspace = "m+1" }
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special" }))
 hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special())
 
--- TODO(Taylan): Do the same for gaming? 
-
 -- Swap Audio sinks
 hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("/usr/local/bin/audio-switch iems"))
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("/usr/local/bin/audio-switch speakers"))

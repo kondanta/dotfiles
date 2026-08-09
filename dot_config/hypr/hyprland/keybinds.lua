@@ -141,9 +141,6 @@ create_bind(vars.kbWindowBorderedFullscreen, hl.dsp.window.fullscreen({ mode = "
 create_bind(vars.kbToggleWindowFloating, hl.dsp.window.float())
 create_bind(vars.kbCloseWindow, hl.dsp.window.close())
 
--- Named workspace shortcuts
-create_bind(vars.kbGamingWs, hl.dsp.exec_cmd("hyprctl dispatch workspace name:gaming"))
-
 -- Special workspace toggles
 create_bind(vars.kbSpecialWs, fn.toggle("specialws"))
 create_bind(vars.kbSystemMonitorWs, fn.toggle("sysmon"))

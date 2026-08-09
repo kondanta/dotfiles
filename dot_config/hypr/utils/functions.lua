@@ -3,6 +3,7 @@ local function wsaction(action, range, i)
         local activews = hl.get_active_workspace()
         if activews then
             local id = activews.id
+            if id < 0 then return end  -- special/named workspaces have negative IDs; skip
             local s  = (i - 1) * 10 + (id % 10)
             local t  = math.floor((id - 1) / 10) * 10 + i
             local z  = (range == "group") and s or t
