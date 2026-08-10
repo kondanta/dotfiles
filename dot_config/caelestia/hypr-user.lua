@@ -22,6 +22,13 @@ for i = 1, NUM_WPM do
     hl.workspace_rule({ workspace = tostring(NUM_WPM + i), monitor = MONITOR2, persistent = true })
 end
 
+-- Layout toggle (scrolling <-> dwindle)
+local useScrolling = true
+hl.bind("SUPER + SHIFT + Space", function()
+    useScrolling = not useScrolling
+    hl.config({ general = { layout = useScrolling and "scrolling" or "dwindle" } })
+end)
+
 -- Audio sink switching
 hl.bind("SUPER + CTRL + I", hl.dsp.exec_cmd("/usr/local/bin/audio-switch iems"))
 hl.bind("SUPER + CTRL + P", hl.dsp.exec_cmd("/usr/local/bin/audio-switch speakers"))

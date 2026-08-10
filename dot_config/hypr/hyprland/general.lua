@@ -2,7 +2,7 @@ local vars = require("variables")
 
 hl.config({
     general = {
-        layout          = "dwindle",
+        layout          = "scrolling",
 
         allow_tearing   = false, -- Allows `immediate` window rule to work
 
@@ -26,9 +26,9 @@ hl.config({
     scrolling = {
         fullscreen_on_one_column = true,
         focus_fit_method         = 1,
-        column_width             = 0.5,
+        column_width             = 1.0,
         follow_focus             = true,
-        follow_min_visible       = 0.0,
+        follow_min_visible       = 1.0,
         explicit_column_widths   = "0.35, 0.5, 0.65, 1.0",
     },
 })

@@ -13,6 +13,11 @@ hl.bind(mainMod .. " + ALT + Space", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + D",           hl.dsp.window.fullscreen({ mode = 1 }))
 hl.bind(mainMod .. " + F",           hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + J",           hl.dsp.layout("togglesplit"))
+local useScrolling = true
+hl.bind(mainMod .. " + SHIFT + Space", function()
+    useScrolling = not useScrolling
+    hl.config({ general = { layout = useScrolling and "scrolling" or "dwindle" } })
+end)
 
 -- Change focus
 hl.bind(mainMod .. " + Left",  hl.dsp.focus({ direction = "left" }))
