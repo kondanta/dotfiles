@@ -14,5 +14,10 @@
     },
     "sidebar": {
         "enabled": true
+    },
+    "utilities": {
+        "toasts": {
+            "nowPlaying": true
+        }
     }
 }

@@ -9,6 +9,6 @@ outputDevice=alsa_output.pci-0000_0b_00.4.analog-stereo
 
 [Window]
 autostartOnLogin=true
-height=1398
+height=1378
 visiblePipeWirePage=testSignalsPage
-width=1228
+width=2448
