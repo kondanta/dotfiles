@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = caelestia-shell
+
+[Action]
+Description = Re-applying workspace click fix to caelestia-shell...
+When = PostTransaction
+Exec = /usr/bin/python3 /usr/local/lib/caelestia-workspace-fix/fix.py
