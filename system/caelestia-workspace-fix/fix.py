@@ -6,6 +6,7 @@ import sys
 
 SHELL_QML = "/etc/xdg/quickshell/caelestia/shell.qml"
 WORKSPACES_QML = "/etc/xdg/quickshell/caelestia/modules/bar/components/workspaces/Workspaces.qml"
+IDLE_MONITORS_QML = "/etc/xdg/quickshell/caelestia/modules/IdleMonitors.qml"
 
 WORKSPACES_OLD = '''            onClicked: event => {
                 const ws = (layout.childAt(event.x, event.y) as Workspace)?.ws;
@@ -27,6 +28,12 @@ WORKSPACES_NEW = '''            onClicked: event => {
                 else
                     Hypr.dispatch(\'hl.dsp.workspace.toggle_special("special")\');
             }'''
+
+# Hypr.usingLua is always false in the installed quickshell-git because
+# Hyprland.usingLua is undefined. Remove the dead branch so dpms dispatches
+# always use the Lua syntax required by Hyprland 0.56.
+IDLE_OLD = '            Hypr.dispatch(Hypr.usingLua && ["dpms off", "dpms on"].includes(action) ? `hl.dsp.dpms({ action = "${action === "dpms off" ? "disable" : "enable"}" })` : action);'
+IDLE_NEW = '            Hypr.dispatch(["dpms off", "dpms on"].includes(action) ? `hl.dsp.dpms({ action = "${action === "dpms off" ? "disable" : "enable"}" })` : action);'
 
 
 def fix_shell_qml():
@@ -59,5 +66,21 @@ def fix_workspaces_qml():
         print("fix-caelestia-workspace: manual review needed: " + WORKSPACES_QML)
 
 
+def fix_idle_monitors_qml():
+    with open(IDLE_MONITORS_QML, 'r') as f:
+        content = f.read()
+
+    if IDLE_NEW in content:
+        print("fix-caelestia-idle: already applied, nothing to do")
+    elif IDLE_OLD in content:
+        with open(IDLE_MONITORS_QML, 'w') as f:
+            f.write(content.replace(IDLE_OLD, IDLE_NEW))
+        print("fix-caelestia-idle: applied successfully")
+    else:
+        print("fix-caelestia-idle: WARNING - pattern not found, upstream may have changed IdleMonitors.qml")
+        print("fix-caelestia-idle: manual review needed: " + IDLE_MONITORS_QML)
+
+
 fix_shell_qml()
 fix_workspaces_qml()
+fix_idle_monitors_qml()
