@@ -9,6 +9,12 @@
             "perMonitorWorkspaces": true
         }
     },
+    "general": {
+        "idle": {
+            "timeouts": [
+            ]
+        }
+    },
     "services": {
         "weatherLocation": "59.9069,10.6333"
     },
