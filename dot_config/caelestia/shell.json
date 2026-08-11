@@ -5,6 +5,36 @@
         }
     },
     "bar": {
+        "statusIcons": [
+            {
+                "enabled": true,
+                "id": "lockStatus"
+            },
+            {
+                "enabled": true,
+                "id": "audio"
+            },
+            {
+                "enabled": false,
+                "id": "microphone"
+            },
+            {
+                "enabled": true,
+                "id": "kbLayout"
+            },
+            {
+                "enabled": true,
+                "id": "network"
+            },
+            {
+                "enabled": true,
+                "id": "bluetooth"
+            },
+            {
+                "enabled": true,
+                "id": "battery"
+            }
+        ],
         "workspaces": {
             "perMonitorWorkspaces": true
         }
@@ -17,6 +47,7 @@
     },
     "utilities": {
         "toasts": {
+            "kbLayoutChanged": true,
             "nowPlaying": true
         }
     }

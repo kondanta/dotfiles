@@ -196,6 +196,9 @@ create_bind(
 -- Sleep
 create_bind(vars.kbSleep, hl.dsp.exec_cmd(vars.sleepGestureCmd), locked)
 
+-- Keyboard layout cycling
+create_bind("SUPER + grave", hl.dsp.exec_cmd("hyprctl switchxkblayout all next"))
+
 -- Clipboard and emoji picker
 create_bind(vars.kbClipboard, hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard"))
 create_bind(vars.kbClipboardDel, hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"))
