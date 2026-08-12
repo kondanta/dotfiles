@@ -1,0 +1,4 @@
+[spotify]
+## Run as a native Wayland client (was falling back to XWayland, which doesn't
+## get real per-pixel alpha compositing from Hyprland) — same fix used for Vesktop.
+extra_arguments = ["--enable-features=UseOzonePlatform", "--ozone-platform=wayland", "--enable-transparent-visuals"]

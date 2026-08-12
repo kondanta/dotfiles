@@ -1,0 +1,33 @@
+/* transparent message list inner content */
+[class*="scrollerInner"],
+[class*="messagesWrapper"] ol {
+  background: transparent !important;
+}
+
+/* server list inner scroller paints its own solid background over the outer
+   guilds__5e434 panel we theme, hiding it entirely — must be cleared */
+.scroller_ef3116 {
+  background: none !important;
+}
+
+/* Discord's per-server custom theme injects an opaque background-image (solid
+   color + scrim) on server-scoped panels, sitting on top of our background-color
+   and blocking both our theme color and window transparency. Strip it. */
+.guilds__5e434,
+[class*="chatContent_"],
+[class*="channelTextArea_"],
+[class*="container_c8ffbb"],
+.tree_ef3116,
+.panels__5e434 {
+  background-image: none !important;
+}
+
+/* blur floating elements (menus, tooltips, popouts) only — they render over already-painted
+   opaque panels, so backdrop-filter has real pixels to sample and won't go solid like it does
+   directly against the transparent window */
+.menu_c1e9c4,
+.tooltip_c36707,
+.autocomplete__6b0e0,
+.popout__76f04 {
+  backdrop-filter: blur(12px);
+}

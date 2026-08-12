@@ -1,3 +1,16 @@
+/* Transparency: redefine the core surface colors as rgba using spicetify's
+   auto-generated --spice-rgb-* variables. Since Spotify's own stylesheet
+   references var(--spice-main) etc. (not literal hex), this cascades through
+   every surface that uses these tokens without needing per-element overrides. */
+:root {
+  --spice-main: rgba(var(--spice-rgb-main), 0.85) !important;
+  --spice-sidebar: rgba(var(--spice-rgb-sidebar), 0.85) !important;
+  --spice-card: rgba(var(--spice-rgb-card), 0.85) !important;
+  --spice-main-elevated: rgba(var(--spice-rgb-main-elevated), 0.85) !important;
+  --spice-highlight-elevated: rgba(var(--spice-rgb-highlight-elevated), 0.85) !important;
+  --spice-player: rgba(var(--spice-rgb-player), 0.85) !important;
+}
+
 /* Background buttons, main play/pause button and progress bar */
 .encore-bright-accent-set,
 .encore-inverted-light-set,
