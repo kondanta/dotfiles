@@ -11,14 +11,45 @@
 }
 
 /* Discord's per-server custom theme injects an opaque background-image (solid
-   color + scrim) on server-scoped panels, sitting on top of our background-color
-   and blocking both our theme color and window transparency. Strip it. */
-.guilds__5e434,
+   color + scrim) on server-scoped "surface" panels, sitting on top of our
+   background-color and blocking both our theme color and window transparency.
+   This list mirrors midnight.css's own full panel selector set (main.css,
+   the block that assigns background-color: var(--background-base-lower)) —
+   Discord's own injection targets essentially the same surface elements, so
+   covering the whole set proactively beats discovering them one at a time.
+   Substring selectors used throughout since exact nesting isn't guaranteed. */
+[class*="guilds__"],
+[class*="sidebarList__"],
+[class*="panels__"],
 [class*="chatContent_"],
 [class*="channelTextArea_"],
 [class*="container_c8ffbb"],
-.tree_ef3116,
-.panels__5e434 {
+[class*="membersWrap_c8ffbb"],
+[class*="container__9293f"],
+[class*="peopleColumn"],
+[class*="nowPlayingColumn"],
+[class*="mainPageScroller__"],
+[class*="headerBar__1a9ce"],
+[class*="scroller__23746"],
+[class*="shop__6db1d"],
+[class*="outer_c0bea0"],
+[class*="searchResultsWrap_a98f3b"],
+[class*="container_f369db"],
+[class*="mainCard_f369db"],
+[class*="container_faa96b"],
+[class*="searchBar_c322aa"],
+[class*="chat_fb64c9"],
+[class*="container_a592e1"],
+[class*="callContainer_cb9592"],
+[class*="callContainer__722ff"],
+[class*="header_c791b2"],
+[class*="scrollerBase_d125d2"],
+[class*="header__0b563"],
+[class*="container__0b563"],
+[class*="container__8a031"],
+[class*="pageBody__41ed7"],
+[class*="aside_f58343"],
+.tree_ef3116 {
   background-image: none !important;
 }
 
