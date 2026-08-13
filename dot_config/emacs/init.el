@@ -14,6 +14,11 @@ gc-cons-percentage 0.6)
 (setq gc-cons-threshold (\* 8 1024 1024)
 gc-cons-percentage 0.1)))
 
+;; Reset default-directory to home after init (prevents defaulting to user-emacs-directory)
+(add-hook 'emacs-startup-hook
+(lambda ()
+(setq default-directory "~/")))
+
 ;; --- Bootstrap straight.el ---
 (defvar bootstrap-version)
 (let ((bootstrap-file
