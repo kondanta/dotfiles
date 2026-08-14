@@ -115,6 +115,10 @@ This section configures all external packages using use-package.
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize)))
 
+  ;; ~/go/bin is not always inherited when Emacs is launched from a GUI launcher.
+  (add-to-list 'exec-path (expand-file-name "~/go/bin"))
+  (setenv "PATH" (concat (expand-file-name "~/go/bin") ":" (getenv "PATH")))
+
   ;; Asynchronous operations for perf
   (use-package async
     :init (dired-async-mode 1))
