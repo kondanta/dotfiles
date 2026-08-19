@@ -2,6 +2,8 @@ set -gx EDITOR nvim
 set -gx VISUAL nvim
 
 if status is-interactive && not set -q TMUX
+    ~/.config/tmux/caelestia-colors.sh 2>/dev/null
+    cat ~/.local/state/caelestia/sequences.txt 2>/dev/null
     exec tmux new-session -A -s main
 end
 
