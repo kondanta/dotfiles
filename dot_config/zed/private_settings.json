@@ -12,20 +12,21 @@
     "metrics": false,
     "anthropic_retention": false
   },
-  "base_keymap": "VSCode",
+  "base_keymap": "Emacs",
   "minimap": {
     "show": "always"
   },
   "show_whitespaces": "trailing",
   "format_on_save": "on",
-  "ui_font_size": 16,
-  "buffer_font_size": 16,
+  "ui_font_size": 24,
+  "buffer_font_size": 24,
   "theme": {
-    "mode": "system",
-    "light": "One Light",
-    "dark": "One Dark"
+    "mode": "dark",
+    "light": "Srcery",
+    "dark": "Srcery"
   },
-  "buffer_font_family": "CaskaydiaCove Nerd Font",
+  "buffer_font_family": "IosevkaTermSlab Nerd Font",
+  "ui_font_family": "IosevkaTermSlab Nerd Font",
   "multi_cursor_modifier": "cmd_or_ctrl",
   "languages": {
     "Nix": {
