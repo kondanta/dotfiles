@@ -190,3 +190,7 @@ Treat these as presumptive blockers unless the author can justify them clearly:
 - the PR duplicates an existing helper or puts logic in the wrong layer when there is a clear canonical home
 
 If those conditions are not met, leave explicit, actionable feedback and push for a cleaner decomposition.
+
+## HTML Report
+
+After completing the review, render the findings as a self-contained HTML file and surface it with `SendUserFile`. See [HTML-TEMPLATE.md](HTML-TEMPLATE.md) for the full spec: card structure, diagram patterns, palette/type guidance, and theme requirements.
