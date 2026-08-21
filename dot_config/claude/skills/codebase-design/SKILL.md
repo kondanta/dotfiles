@@ -70,7 +70,7 @@ Good interfaces make testing natural. Rust's ownership model and trait system pr
 
 ### 1. Accept dependencies, don't create them (dependency injection via traits)
 
-```rust
+````rust
 // Testable: caller injects the gateway
 fn process_order(order: Order, gateway: &dyn PaymentGateway) -> Result<Receipt, PaymentError> {
     gateway.charge(order.total)
@@ -81,7 +81,7 @@ fn process_order(order: Order) -> Result<Receipt, PaymentError> {
     let gateway = StripeGateway::new();   // can't swap this in tests
     gateway.charge(order.total)
 }
-```
+
 
 Prefer `&dyn Trait` for runtime polymorphism or generics + trait bounds (`T: PaymentGateway`) for zero-cost dispatch. Use `Arc<dyn Trait>` when shared ownership across threads is needed.
 
@@ -97,7 +97,7 @@ fn calculate_discount(cart: &Cart) -> Discount {
 fn apply_discount(cart: &mut Cart) {
     cart.total -= compute_discount(cart);
 }
-```
+````
 
 Prefer functions that return `Result<T, E>` or a computed value over functions that mutate in place. When mutation is necessary, make the mutation the _only_ thing the function does — separate calculation from application.
 
