@@ -1,14 +1,15 @@
 [StreamInputs]
-inputDevice=alsa_input.pci-0000_0b_00.4.analog-stereo
+inputDevice=alsa_input.usb-Generic_Blue_Microphones_201701110001-00.analog-stereo
 plugins=rnnoise#0,gate#0,deesser#0,compressor#0,equalizer#0,limiter#0
+useDefaultInputDevice=false
 visiblePage=pluginsPage
 visiblePlugin=rnnoise#0
 
 [StreamOutputs]
-outputDevice=alsa_output.pci-0000_0b_00.4.analog-stereo
+outputDevice=alsa_output.pci-0000_0a_00.4.analog-stereo
 
 [Window]
 autostartOnLogin=true
-height=1378
-visiblePipeWirePage=testSignalsPage
-width=2448
+height=1398
+visiblePage=inputPage
+width=2463
