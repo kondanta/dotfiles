@@ -1,0 +1,19 @@
+#!/bin/bash
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export PULSE_RUNTIME_PATH=$XDG_RUNTIME_DIR/pulse
+
+SINK=$(pactl list sinks short | grep 'pci.*analog-stereo' | grep -v 'usb' | awk '{print $2}')
+
+if [ -z "$SINK" ]; then
+    echo "audio-switch: could not detect analog sink" >&2
+    exit 1
+fi
+
+if [ "$1" = "iems" ]; then
+    pactl set-sink-port "$SINK" analog-output-headphones
+elif [ "$1" = "speakers" ]; then
+    pactl set-sink-port "$SINK" analog-output-lineout
+else
+    echo "usage: audio-switch <iems|speakers>" >&2
+    exit 1
+fi
