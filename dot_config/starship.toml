@@ -314,3 +314,10 @@ unknown_msg = '[◌](bold dimmed yellow)'
 [spack]
 symbol = "◇ "
 format = " spack [$symbol$environment]($style)"
+
+[kubernetes]
+disabled = false
+detect_env_vars = ["KUBIE_ACTIVE"]
+symbol = "☸ "
+style = "bold italic cyan"
+format = ' [$symbol$context( \($namespace\))]($style)'
