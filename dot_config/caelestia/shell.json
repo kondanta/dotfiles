@@ -1,63 +1,63 @@
 {
-    "appearance": {
-        "transparency": {
-            "enabled": true
-        }
-    },
-    "bar": {
-        "statusIcons": [
-            {
-                "enabled": true,
-                "id": "lockStatus"
-            },
-            {
-                "enabled": true,
-                "id": "audio"
-            },
-            {
-                "enabled": false,
-                "id": "microphone"
-            },
-            {
-                "enabled": true,
-                "id": "kbLayout"
-            },
-            {
-                "enabled": true,
-                "id": "network"
-            },
-            {
-                "enabled": true,
-                "id": "bluetooth"
-            },
-            {
-                "enabled": true,
-                "id": "battery"
-            }
-        ],
-        "workspaces": {
-            "activeLabel": "",
-            "label": "",
-            "maxWindowIcons": 3,
-            "occupiedLabel": "",
-            "perMonitorWorkspaces": true
-        }
-    },
-    "services": {
-        "weatherLocation": "59.9069,10.6333"
-    },
-    "sidebar": {
-        "enabled": true
-    },
-    "utilities": {
-        "toasts": {
-            "kbLayoutChanged": true,
-            "nowPlaying": true
-        },
-        "vpn": {
-            "provider": [
-            ],
-            "selectedProvider": ""
-        }
+  "appearance": {
+    "transparency": {
+      "enabled": true
     }
+  },
+  "bar": {
+    "statusIcons": [
+      {
+        "enabled": true,
+        "id": "lockStatus"
+      },
+      {
+        "enabled": true,
+        "id": "audio"
+      },
+      {
+        "enabled": false,
+        "id": "microphone"
+      },
+      {
+        "enabled": true,
+        "id": "kbLayout"
+      },
+      {
+        "enabled": true,
+        "id": "network"
+      },
+      {
+        "enabled": true,
+        "id": "bluetooth"
+      },
+      {
+        "enabled": true,
+        "id": "battery"
+      }
+    ],
+    "workspaces": {
+      "displayType": "Text",
+      "activeLabel": "",
+      "label": "",
+      "maxWindowIcons": 3,
+      "occupiedLabel": "",
+      "perMonitorWorkspaces": true
+    }
+  },
+  "services": {
+    "weatherLocation": "59.9069,10.6333"
+  },
+  "sidebar": {
+    "enabled": true
+  },
+  "utilities": {
+    "toasts": {
+      "kbLayoutChanged": true,
+      "nowPlaying": true
+    },
+    "vpn": {
+      "provider": [],
+      "selectedProvider": ""
+    }
+  }
 }
