@@ -85,6 +85,7 @@ tagged_rule(float_tag, {
 tagged_rule(float_tag, {
     "File (Operation|Upload)( Progress)?", -- File manager operation progress (upload, move, copy, etc)
     ".* Properties",                       -- File properties
+    'Rename ".*"',                         -- File renaming
 }, "title")
 
 
@@ -216,5 +217,3 @@ hl.layer_rule({ match = { namespace = "launcher" }, animation = "popin 80%", blu
 -- Shell
 hl.layer_rule({ match = { namespace = "caelestia-(border-exclusion|area-picker)" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "caelestia-(drawers|background)" }, animation = "fade" })
-
-
